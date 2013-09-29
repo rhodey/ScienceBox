@@ -2,10 +2,9 @@ package org.anhonesteffort.sciencebox;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
-import org.anhonesteffort.sciencebox.hardware.control.Blower;
-import org.anhonesteffort.sciencebox.hardware.control.Humidifier;
-import org.anhonesteffort.sciencebox.hardware.control.PeltierCooler;
-import org.anhonesteffort.sciencebox.hardware.control.PeltierHeater;
+import org.anhonesteffort.sciencebox.hardware.active.Humidifier;
+import org.anhonesteffort.sciencebox.hardware.active.PeltierCooler;
+import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
 import org.anhonesteffort.sciencebox.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.hardware.sensor.TemperatureSensor;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
@@ -24,18 +23,20 @@ public class Main {
       ScienceSerialServer scienceSerialServer = new ScienceSerialServer(sciencePort);
 
       // Sensors.
-      TemperatureSensor scienceTemperature = new TemperatureSensor(scienceSerialServer);
+      TemperatureSensor tempSensor = new TemperatureSensor(scienceSerialServer);
       HumiditySensor humiditySensor = new HumiditySensor(scienceSerialServer);
 
       // Active hardware.
-      Blower scienceBlower = new Blower(scienceSerialServer);
-      scienceBlower.on();
-      Humidifier scienceHumidifier = new Humidifier(scienceSerialServer);
-      scienceHumidifier.on();
-      PeltierCooler scienceCooler = new PeltierCooler(scienceSerialServer);
-      scienceCooler.on();
-      PeltierHeater scienceHeater = new PeltierHeater(scienceSerialServer);
-      scienceHeater.on();
+      PeltierCooler cooler = new PeltierCooler(scienceSerialServer);
+      PeltierHeater heater = new PeltierHeater(scienceSerialServer);
+      Humidifier humidifier = new Humidifier(scienceSerialServer);
+
+      // Controllers
+      TemperatureController tempController = new TemperatureController(tempSensor, cooler, heater);
+      HumidityController humidityController = new HumidityController(humiditySensor, humidifier);
+
+      tempController.setTarget(80.0);
+      humidityController.setTarget(20.0);
 
       //scienceSerialServer.close();
 

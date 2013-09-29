@@ -1,4 +1,4 @@
-package org.anhonesteffort.sciencebox.hardware.control;
+package org.anhonesteffort.sciencebox.hardware.active;
 
 import org.anhonesteffort.sciencebox.serial.ScienceProtocol;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
