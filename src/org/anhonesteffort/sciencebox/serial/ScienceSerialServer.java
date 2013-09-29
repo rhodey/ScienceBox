@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class ScienceSerialServer implements SerialPortEventListener {
 
   private SerialPort serialPort;
-  private int receiveChannel = 0;
+  private byte receiveChannel = 0x00;
   private ArrayList<Byte> receivedData = new ArrayList<Byte>();
   private ArrayList<ChannelListener> channelListeners = new ArrayList<ChannelListener>();
 
@@ -49,10 +49,10 @@ public class ScienceSerialServer implements SerialPortEventListener {
           switch (state) {
 
             case READ_HUMIDITY:
-              if(bytes[i] == ScienceProtocol.DATA_VALUE_SEPARATOR) {
+              if(bytes[i] == ScienceProtocol.SENSOR_READ_SEPARATOR) {
                 callDataListeners();
                 state = DataState.READ_TEMPERATURE;
-                receiveChannel = 1;
+                receiveChannel++;
                 receivedData = new ArrayList<Byte>();
                 break;
               }
@@ -62,10 +62,10 @@ public class ScienceSerialServer implements SerialPortEventListener {
 
 
             case READ_TEMPERATURE:
-              if(bytes[i] == ScienceProtocol.DATA_END) {
+              if(bytes[i] == ScienceProtocol.SENSOR_READ_END) {
                 state = DataState.READ_HUMIDITY;
                 callDataListeners();
-                receiveChannel = 0;
+                receiveChannel = 0x00;
                 receivedData = new ArrayList<Byte>();
                 break;
               }

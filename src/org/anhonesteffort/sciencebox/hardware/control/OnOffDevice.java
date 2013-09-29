@@ -1,4 +1,4 @@
-package org.anhonesteffort.sciencebox.hardware;
+package org.anhonesteffort.sciencebox.hardware.control;
 
 import org.anhonesteffort.sciencebox.serial.ScienceProtocol;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
@@ -7,13 +7,13 @@ import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
  * Programmer: rhodey
  * Date: 9/28/13
  */
-public class PeltierHeater {
+public class OnOffDevice {
 
-  private static final byte CHANNEL = 0x01;
+  protected byte CHANNEL = 0x00;
 
   private ScienceSerialServer io;
 
-  public PeltierHeater(ScienceSerialServer io) {
+  public OnOffDevice(ScienceSerialServer io) {
     this.io = io;
   }
 

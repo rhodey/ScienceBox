@@ -6,8 +6,8 @@ package org.anhonesteffort.sciencebox.serial;
  */
 public interface ChannelListener {
 
-  public int getChannel();
+  public byte getChannel();
 
-  public void onDataReceived(byte[] data);
+  public void onDataReceived(byte[] reading);
 
 }
