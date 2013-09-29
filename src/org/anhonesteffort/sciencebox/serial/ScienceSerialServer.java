@@ -49,7 +49,7 @@ public class ScienceSerialServer implements SerialPortEventListener {
           switch (state) {
 
             case READ_HUMIDITY:
-              if(bytes[i] == ScienceProtocol.VALUE_SEPARATOR) {
+              if(bytes[i] == ScienceProtocol.DATA_VALUE_SEPARATOR) {
                 callDataListeners();
                 state = DataState.READ_TEMPERATURE;
                 receiveChannel = 1;
