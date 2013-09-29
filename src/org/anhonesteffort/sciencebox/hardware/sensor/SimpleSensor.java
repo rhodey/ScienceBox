@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class SimpleSensor implements ChannelListener {
 
-  private byte[] last_reading;
+  private byte[] last_reading = new byte[] {0};
   private long reading_count = 0;
   private List<SensorListener> sensorListeners = new LinkedList<SensorListener>();
 

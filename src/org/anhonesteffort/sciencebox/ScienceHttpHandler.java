@@ -20,6 +20,8 @@ public class ScienceHttpHandler extends AbstractHandler {
     response.setStatus(HttpServletResponse.SC_OK);
     baseRequest.setHandled(true);
     response.getWriter().println("<h1>Hello World</h1>");
+    response.getWriter().println("baseRequest: " + baseRequest + "<br>");
+    response.getWriter().println("request: " + request + "<br>");
   }
 
 }

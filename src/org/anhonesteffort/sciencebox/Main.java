@@ -16,11 +16,13 @@ public class Main {
 
     SerialPort sciencePort = new SerialPort("/dev/ttyACM0");
 
-    Server server = new Server(8080);
-    server.;
-    server.join();
-
     try {
+
+      // Http application server.
+      Server server = new Server(8080);
+      server.setHandler(new ScienceHttpHandler());
+      server.join();
+      server.start();
 
       // Serial port and server thing.
       sciencePort.openPort();
@@ -47,6 +49,8 @@ public class Main {
 
     } catch (SerialPortException e) {
       System.out.println("Serial port is mad: " + e);
+    } catch (Exception e) {
+      System.out.println("Http server is mad: " + e);
     }
   }
 
