@@ -6,13 +6,13 @@
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 
 #define RELAY0 3
-#define RELAY1 10
-#define RELAY2 11
-#define RELAY3 12
+#define RELAY1 13
+#define RELAY2 12
+#define RELAY3 11
 
 DHT dht(DHTPIN, DHTTYPE);
 
-LiquidCrystal lcd(8, 13, 9, 4, 5, 6, 7);
+LiquidCrystal lcd(8, 10, 9, 4, 5, 6, 7);
 char msgs[5][16] = {"Right Key OK ",
                     "Up Key OK    ",               
                     "Down Key OK  ",
@@ -31,6 +31,14 @@ byte index = 0; // Index into array; where to store the character
  
 void setup()
 {
+  digitalWrite(RELAY0, LOW);
+  digitalWrite(RELAY1, LOW);
+  digitalWrite(RELAY2, LOW);
+  digitalWrite(RELAY3, LOW);
+  pinMode(RELAY0, OUTPUT);
+  pinMode(RELAY1, OUTPUT);
+  pinMode(RELAY2, OUTPUT);
+  pinMode(RELAY3, OUTPUT);
     Serial.begin(9600); 
     Serial.println("DHTxx test!");
 
@@ -38,14 +46,6 @@ void setup()
 
   lcd.begin(16, 2);
   lcd.print("Science Box!"); 
-  pinMode(RELAY0, OUTPUT);
-  pinMode(RELAY1, OUTPUT);
-  pinMode(RELAY2, OUTPUT);
-  pinMode(RELAY3, OUTPUT);
-  digitalWrite(RELAY0, LOW);
-  digitalWrite(RELAY1, LOW);
-  digitalWrite(RELAY2, LOW);
-  digitalWrite(RELAY3, LOW);
 }
 
 
@@ -107,25 +107,33 @@ void loop()
 }
 
 void doMsg() {
+  if (inData[0] =='0') {
+   if (inData[1] =='1') {
+      digitalWrite(RELAY0, HIGH);
+    } else {
+      digitalWrite(RELAY0, LOW);
+    }
+  }
   if (inData[0] =='1') {
-    digitalWrite(RELAY0, HIGH);
-  } else {
-    digitalWrite(RELAY0, LOW);
+    if (inData[1] =='1') {
+      digitalWrite(RELAY1, HIGH);
+    } else {
+      digitalWrite(RELAY1, LOW);
+    }
   }
-  if (inData[1] =='1') {
-    digitalWrite(RELAY1, HIGH);
-  } else {
-    digitalWrite(RELAY1, LOW);
+  if (inData[0] =='2') {
+    if (inData[1] =='1') {
+      digitalWrite(RELAY2, HIGH);
+    } else {
+      digitalWrite(RELAY2, LOW);
+    }
   }
-  if (inData[2] =='1') {
-    digitalWrite(RELAY2, HIGH);
-  } else {
-    digitalWrite(RELAY2, LOW);
-  }
-  if (inData[3] =='1') {
-    digitalWrite(RELAY3, HIGH);
-  } else {
-    digitalWrite(RELAY3, LOW);
+  if (inData[0] =='3') {
+    if (inData[1] =='1') {
+      digitalWrite(RELAY3, HIGH);
+    } else {
+      digitalWrite(RELAY3, LOW);
+    }
   }
 }
 
