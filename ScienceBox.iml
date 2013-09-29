@@ -8,6 +8,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jssc" level="project" />
+    <orderEntry type="library" name="jetty-server-9.0.5.v20130815" level="project" />
+    <orderEntry type="library" name="servlet-api-3.0" level="project" />
   </component>
 </module>
 

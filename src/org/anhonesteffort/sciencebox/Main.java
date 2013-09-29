@@ -8,12 +8,17 @@ import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
 import org.anhonesteffort.sciencebox.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.hardware.sensor.TemperatureSensor;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
+import org.eclipse.jetty.server.Server;
 
 public class Main {
 
   public static void main(String[] args) {
 
     SerialPort sciencePort = new SerialPort("/dev/ttyACM0");
+
+    Server server = new Server(8080);
+    server.;
+    server.join();
 
     try {
 

@@ -26,12 +26,10 @@ public class HumidityController implements SensorListener {
   }
 
   private void handleHumidityChange() {
-    if (last_humidity < target_humidity) {
+    if (last_humidity < target_humidity)
       humidifier.on();
-    }
-    else {
+    else
       humidifier.off();
-    }
   }
 
   public void setTarget(double target_humidity) {
