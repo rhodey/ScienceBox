@@ -19,3 +19,14 @@ ATX power supply.
   
 Eventually the Arduino will be removed from the system
 entirely in favor of a simple PCB.
+
+Control Program
+------------------------
+
+ScienceBox is controllable from a simple REST API. Current
+functionality includes the ability to set target temperature
+and humidity values and have ScienceBox manipulate the
+hardware components to achieve the desired state.  
+  
+Because we're limited to switching power with relays, no
+fancy PID control is possible :(
