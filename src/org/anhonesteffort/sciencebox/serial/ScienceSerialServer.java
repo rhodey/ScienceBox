@@ -6,6 +6,7 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Programmer: rhodey
@@ -14,12 +15,8 @@ import java.util.ArrayList;
 public class ScienceSerialServer implements SerialPortEventListener {
 
   private SerialPort serialPort;
-  private byte receiveChannel = 0x00;
   private ArrayList<Byte> receivedData = new ArrayList<Byte>();
   private ArrayList<ChannelListener> channelListeners = new ArrayList<ChannelListener>();
-
-  private enum DataState {READ_HUMIDITY, READ_TEMPERATURE};
-  private DataState state = DataState.READ_HUMIDITY;
 
   public ScienceSerialServer(SerialPort serialPort) throws SerialPortException {
     this.serialPort = serialPort;
@@ -27,14 +24,25 @@ public class ScienceSerialServer implements SerialPortEventListener {
   }
 
   private void callDataListeners() {
-    byte[] received_data = new byte[receivedData.size()];
+    int channel_number = 0;
+    LinkedList<Byte> channelData = new LinkedList<Byte>();
+    byte[] channel_data;
 
-    for(int i = 0; i < received_data.length; i++)
-      received_data[i] = receivedData.get(i).byteValue();
+    for(int i = 0; i < receivedData.size(); i++) {
+      if(receivedData.get(i).byteValue() == ScienceProtocol.SENSOR_READ_SEPARATOR || i == (receivedData.size() - 1)) {
+        channel_data = new byte[channelData.size()];
+        for(int c = 0; c < channelData.size(); c++)
+          channel_data[c] = channelData.get(c);
 
-    for(ChannelListener listener : channelListeners) {
-      if(listener.getChannel() == receiveChannel)
-        listener.onDataReceived(received_data);
+        for(ChannelListener listener : channelListeners) {
+          if(listener.getChannel() == channel_number)
+            listener.onDataReceived(channel_data);
+        }
+        channelData.clear();
+        channel_number++;
+      }
+      else
+        channelData.add(receivedData.get(i).byteValue());
     }
   }
 
@@ -43,38 +51,15 @@ public class ScienceSerialServer implements SerialPortEventListener {
 
     if(serialPortEvent.isRXCHAR()) {
       try {
-
         bytes = serialPort.readBytes();
         for(int i = 0; i < bytes.length; i++) {
-          switch (state) {
-
-            case READ_HUMIDITY:
-              if(bytes[i] == ScienceProtocol.SENSOR_READ_SEPARATOR) {
-                callDataListeners();
-                state = DataState.READ_TEMPERATURE;
-                receiveChannel++;
-                receivedData = new ArrayList<Byte>();
-                break;
-              }
-
-              receivedData.add(bytes[i]);
-              break;
-
-
-            case READ_TEMPERATURE:
-              if(bytes[i] == ScienceProtocol.SENSOR_READ_END) {
-                state = DataState.READ_HUMIDITY;
-                callDataListeners();
-                receiveChannel = 0x00;
-                receivedData = new ArrayList<Byte>();
-                break;
-              }
-
-              receivedData.add(bytes[i]);
-              break;
+          if(bytes[i] == ScienceProtocol.SENSOR_READ_END) {
+            callDataListeners();
+            receivedData = new ArrayList<Byte>();
           }
+          else
+            receivedData.add(bytes[i]);
         }
-
       }
       catch (SerialPortException e) {
         System.out.println("Error reading bytes from port! " + e);
@@ -86,7 +71,7 @@ public class ScienceSerialServer implements SerialPortEventListener {
     channelListeners.add(listener);
   }
 
-  public void removeKISSFrameListener(ChannelListener listener) {
+  public void removeChannelListener(ChannelListener listener) {
     channelListeners.remove(listener);
   }
 

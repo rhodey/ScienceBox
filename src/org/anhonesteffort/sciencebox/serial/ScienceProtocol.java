@@ -7,7 +7,7 @@ package org.anhonesteffort.sciencebox.serial;
 public class ScienceProtocol {
 
   private static final byte CONTROL_CHANNEL_OFF = 0x00;
-  private static final byte CONTROL_CHANNEL_ON = 0x01;
+  private static final byte CONTROL_CHANNEL_ON  = 0x01;
   private static final byte CONTROL_COMMAND_END = 0x0A;
 
   public static final byte CONTROL_CHANNEL_BLOWER         = 0x00;
@@ -22,11 +22,11 @@ public class ScienceProtocol {
   public static final byte SENSOR_CHANNEL_HUMIDIFIER  = 0x01;
 
   public static byte[] turnOffChannel(byte channel) {
-    return new byte[] {channel, CONTROL_CHANNEL_OFF, CONTROL_COMMAND_END};
+    return new byte[] {channel, CONTROL_CHANNEL_OFF};
   }
 
   public static byte[] turnOnChannel(byte channel) {
-    return new byte[] {channel, CONTROL_CHANNEL_ON, CONTROL_COMMAND_END};
+    return new byte[] {channel, CONTROL_CHANNEL_ON};
   }
 
 }
