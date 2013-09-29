@@ -18,8 +18,8 @@ public class ScienceProtocol {
   protected static final char SENSOR_READ_SEPARATOR = ',';
   protected static final char SENSOR_READ_END       = 0x0A;
 
-  public static final byte SENSOR_CHANNEL_TEMPERATURE = 0x00;
-  public static final byte SENSOR_CHANNEL_HUMIDIFIER  = 0x01;
+  public static final byte SENSOR_CHANNEL_TEMPERATURE = 0x01;
+  public static final byte SENSOR_CHANNEL_HUMIDIFIER  = 0x00;
 
   public static byte[] turnOffChannel(char channel) {
     return new byte[] {(byte) channel, CONTROL_CHANNEL_OFF, CONTROL_COMMAND_END};
