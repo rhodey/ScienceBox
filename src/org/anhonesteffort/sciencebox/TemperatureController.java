@@ -39,6 +39,14 @@ public class TemperatureController implements SensorListener {
     }
   }
 
+  public double getLastReading() {
+    return last_temp;
+  }
+
+  public double getTarget() {
+    return target_temp;
+  }
+
   public void setTarget(double target_temp) {
     this.target_temp = target_temp;
     handleTempChange();
@@ -46,8 +54,14 @@ public class TemperatureController implements SensorListener {
 
   @Override
   public void onReadingChanged(byte[] new_reading) {
-    last_temp = Double.parseDouble(new String(new_reading));
-    handleTempChange();
+    try {
+
+      last_temp = Double.parseDouble(new String(new_reading));
+      handleTempChange();
+
+    } catch (Exception e) {
+      System.out.println("Could not parse double from " + new_reading);
+    }
   }
 
 }

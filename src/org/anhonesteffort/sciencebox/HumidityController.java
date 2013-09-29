@@ -32,6 +32,14 @@ public class HumidityController implements SensorListener {
       humidifier.off();
   }
 
+  public double getLastReading() {
+    return last_humidity;
+  }
+
+  public double getTarget() {
+    return target_humidity;
+  }
+
   public void setTarget(double target_humidity) {
     this.target_humidity = target_humidity;
     handleHumidityChange();
@@ -39,8 +47,14 @@ public class HumidityController implements SensorListener {
 
   @Override
   public void onReadingChanged(byte[] new_reading) {
-    last_humidity = Double.parseDouble(new String(new_reading));
-    handleHumidityChange();
+    try {
+
+      last_humidity = Double.parseDouble(new String(new_reading));
+      handleHumidityChange();
+
+    } catch (Exception e) {
+      System.out.println("Could not parse double from " + new_reading);
+    }
   }
 
 }

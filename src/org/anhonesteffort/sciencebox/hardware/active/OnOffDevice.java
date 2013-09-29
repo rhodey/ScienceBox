@@ -9,7 +9,7 @@ import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
  */
 public class OnOffDevice {
 
-  protected byte CHANNEL = 0x00;
+  protected char CHANNEL = '0';
 
   private ScienceSerialServer io;
 

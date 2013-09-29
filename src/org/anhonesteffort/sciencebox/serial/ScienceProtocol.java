@@ -6,27 +6,27 @@ package org.anhonesteffort.sciencebox.serial;
  */
 public class ScienceProtocol {
 
-  private static final byte CONTROL_CHANNEL_OFF = 0x00;
-  private static final byte CONTROL_CHANNEL_ON  = 0x01;
-  private static final byte CONTROL_COMMAND_END = 0x0A;
+  private static final char CONTROL_CHANNEL_OFF = '0';
+  private static final char CONTROL_CHANNEL_ON  = '1';
+  private static final char CONTROL_COMMAND_END = 0x0A;
 
-  public static final byte CONTROL_CHANNEL_BLOWER         = 0x00;
-  public static final byte CONTROL_CHANNEL_HUMIDIFIER     = 0x01;
-  public static final byte CONTROL_CHANNEL_PELTIER_COOLER = 0x02;
-  public static final byte CONTROL_CHANNEL_PELTIER_HEATER = 0x03;
+  public static final char CONTROL_CHANNEL_BLOWER         = '1';
+  public static final char CONTROL_CHANNEL_HUMIDIFIER     = '0';
+  public static final char CONTROL_CHANNEL_PELTIER_COOLER = '3';
+  public static final char CONTROL_CHANNEL_PELTIER_HEATER = '2';
 
-  protected static final char SENSOR_READ_SEPARATOR = 0x2C;
+  protected static final char SENSOR_READ_SEPARATOR = ',';
   protected static final char SENSOR_READ_END       = 0x0A;
 
   public static final byte SENSOR_CHANNEL_TEMPERATURE = 0x00;
   public static final byte SENSOR_CHANNEL_HUMIDIFIER  = 0x01;
 
-  public static byte[] turnOffChannel(byte channel) {
-    return new byte[] {channel, CONTROL_CHANNEL_OFF};
+  public static byte[] turnOffChannel(char channel) {
+    return new byte[] {(byte) channel, CONTROL_CHANNEL_OFF, CONTROL_COMMAND_END};
   }
 
-  public static byte[] turnOnChannel(byte channel) {
-    return new byte[] {channel, CONTROL_CHANNEL_ON};
+  public static byte[] turnOnChannel(char channel) {
+    return new byte[] {(byte) channel, CONTROL_CHANNEL_ON, CONTROL_COMMAND_END};
   }
 
 }
