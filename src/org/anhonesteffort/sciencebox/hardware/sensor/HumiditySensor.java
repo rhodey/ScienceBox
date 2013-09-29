@@ -18,11 +18,11 @@ public class HumiditySensor implements ChannelListener {
   }
 
   public byte getChannel() {
-    return ScienceProtocol.SENSOR_CHANNEL_TEMPERATURE;
+    return ScienceProtocol.SENSOR_CHANNEL_HUMIDIFIER;
   }
 
   public void onDataReceived(byte[] reading) {
-    System.out.println("Current temperature: " + new String(reading));
+    System.out.println("Current humdity: " + new String(reading));
   }
 
 }
