@@ -1,7 +1,8 @@
 ScienceBox
 =================
 
-ScienceBox is a box for doing science.
+ScienceBox is a box for doing science, designed and built
+during Science Hack Day SF 2013.
 
 Architecture
 ------------------------
