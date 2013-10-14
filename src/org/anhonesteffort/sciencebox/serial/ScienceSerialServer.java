@@ -5,8 +5,8 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Programmer: rhodey
@@ -15,8 +15,8 @@ import java.util.LinkedList;
 public class ScienceSerialServer implements SerialPortEventListener {
 
   private SerialPort serialPort;
-  private ArrayList<Byte> receivedData = new ArrayList<Byte>();
-  private ArrayList<ChannelListener> channelListeners = new ArrayList<ChannelListener>();
+  private List<Byte> receivedData = new LinkedList<Byte>();
+  private List<ChannelListener> channelListeners = new LinkedList<ChannelListener>();
 
   public ScienceSerialServer(SerialPort serialPort) throws SerialPortException {
     this.serialPort = serialPort;
@@ -25,7 +25,7 @@ public class ScienceSerialServer implements SerialPortEventListener {
 
   private void callDataListeners() {
     int channel_number = 0;
-    LinkedList<Byte> channelData = new LinkedList<Byte>();
+    List<Byte> channelData = new LinkedList<Byte>();
     byte[] channel_data;
 
     for(int i = 0; i < receivedData.size(); i++) {
@@ -55,7 +55,7 @@ public class ScienceSerialServer implements SerialPortEventListener {
         for(int i = 0; i < bytes.length; i++) {
           if(bytes[i] == ScienceProtocol.SENSOR_READ_END) {
             callDataListeners();
-            receivedData = new ArrayList<Byte>();
+            receivedData = new LinkedList<Byte>();
           }
           else
             receivedData.add(bytes[i]);
