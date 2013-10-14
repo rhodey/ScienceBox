@@ -12,8 +12,8 @@ public class Grammar {
   public static final String TOKEN_LOOP = "LOOP";
 
   public static final String TOKEN_TYPE_PERCENTAGE   = "%";
-  public static final String TOKEN_TYPE_FAHRENHEIT   = "F";
   public static final String TOKEN_TYPE_CELSIUS      = "C";
+  public static final String TOKEN_TYPE_FAHRENHEIT   = "F";
   public static final String TOKEN_TYPE_MILLISECONDS = "MILLISECONDS";
   public static final String TOKEN_TYPE_SECONDS      = "SECONDS";
   public static final String TOKEN_TYPE_MINUTES      = "MINUTES";
@@ -32,5 +32,28 @@ public class Grammar {
 
   public static final String TOKEN_CONTROL_TEMPERATURE = "TEMPERATURE";
   public static final String TOKEN_CONTROL_HUMIDITY    = "HUMIDITY";
+
+  public static enum SettingType {
+    PERCENTAGE,
+    CELSIUS,
+    FAHRENHEIT,
+    MILLISECONDS,
+    SECONDS,
+    MINUTES,
+    HOURS,
+    DAYS
+  }
+
+  public static enum DeviceType {
+    FAN,
+    HEATER,
+    COOLER,
+    HUMIDIFIER
+  }
+
+  public static enum ControlType {
+    TEMPERATURE,
+    HUMIDITY
+  }
 
 }
