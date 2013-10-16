@@ -13,7 +13,7 @@ public class Grammar {
 
   public static final String TOKEN_LOOP = "LOOP";
 
-  public static final String TOKEN_TYPE_PERCENTAGE   = "%";
+  public static final String TOKEN_TYPE_PERCENT      = "%";
   public static final String TOKEN_TYPE_CELSIUS      = "C";
   public static final String TOKEN_TYPE_FAHRENHEIT   = "F";
   public static final String TOKEN_TYPE_MILLISECONDS = "MILLISECONDS";
@@ -37,7 +37,7 @@ public class Grammar {
 
   public static enum SettingType {
     ON_OFF,
-    PERCENTAGE,
+    PERCENT,
     CELSIUS,
     FAHRENHEIT,
     MILLISECONDS,

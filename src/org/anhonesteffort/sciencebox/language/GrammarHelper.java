@@ -175,8 +175,8 @@ public class GrammarHelper {
     if (!isDeviceSetting(line) && !isControlSetting(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE or TOKEN CONTROL TYPE.");
 
-    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENTAGE + ")$"))
-      return Grammar.SettingType.PERCENTAGE;
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENT + ")$"))
+      return Grammar.SettingType.PERCENT;
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_CELSIUS + ")$"))
       return Grammar.SettingType.CELSIUS;
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")$"))

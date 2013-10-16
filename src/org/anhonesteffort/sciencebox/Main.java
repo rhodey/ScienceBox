@@ -8,7 +8,9 @@ import org.anhonesteffort.sciencebox.hardware.active.PeltierCooler;
 import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
 import org.anhonesteffort.sciencebox.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.hardware.sensor.TemperatureSensor;
+import org.anhonesteffort.sciencebox.language.Interpreter;
 import org.anhonesteffort.sciencebox.language.Parser;
+import org.anhonesteffort.sciencebox.language.SimpleExecuter;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
 import org.eclipse.jetty.server.Server;
 
@@ -59,7 +61,12 @@ public class Main {
 
       FileInputStream fileIn = new FileInputStream("/home/rhodey/dev/ScienceBox/test.fan");
       Parser fanParse = new Parser(fileIn);
-      System.out.println("result of verify: " + fanParse.verifySyntax());
+      Interpreter fanInterpret = new Interpreter(fanParse);
+      SimpleExecuter executer = new SimpleExecuter();
+
+      System.out.println("FanOn script has correct syntax? " + fanParse.isSyntaxCorrect());
+      fanInterpret.addInterpreterListener(executer);
+      fanInterpret.run();
 
     } catch (Exception e) {
       System.out.println("the sky is falling: " + e);

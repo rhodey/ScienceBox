@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +18,7 @@ public class Parser {
 
   private static final String TEMP_FILE_NAME = "FanOn.temp";
 
-  public Parser(FileInputStream inputFile) throws FileNotFoundException, IOException {
+  public Parser(FileInputStream inputFile) throws IOException {
     DataInputStream in = new DataInputStream(inputFile);
     InputStreamReader inReader = new InputStreamReader(in);
     BufferedReader inputFileReader = new BufferedReader(inReader);
@@ -39,7 +38,7 @@ public class Parser {
     inputFileReader.close();
   }
 
-  private BufferedReader getTempBufferedReader() {
+  protected BufferedReader getTempFileReader() {
     try {
 
       DataInputStream temp = new DataInputStream(new FileInputStream(TEMP_FILE_NAME));
@@ -47,14 +46,14 @@ public class Parser {
       return new BufferedReader(tempReader);
 
     } catch (Exception e) {
-      System.out.println("lol, wut? " + e);
+      System.out.println("Exception opening temp file for reader? " + e);
     }
 
     return null;
   }
 
-  public boolean verifySyntax() {
-    BufferedReader tempReader = getTempBufferedReader();
+  public boolean isSyntaxCorrect() {
+    BufferedReader tempReader = getTempFileReader();
 
     List<String> procedureNames = new LinkedList<String>();
     List<String> proceduresWithNoEnd = new LinkedList<String>();
@@ -132,7 +131,7 @@ public class Parser {
       }
 
       if (proceduresWithNoEnd.size() != 0)
-        throw new IllegalSyntaxException("Not all procedures have a procedure end: " + proceduresWithNoEnd.iterator());
+        throw new IllegalSyntaxException("Not all procedures have a procedure end.");
 
       if (loops_with_no_end != 0)
         throw new IllegalSyntaxException("Number of BEGIN LOOP and END LOOP statements do not match: " + loops_with_no_end);
@@ -144,102 +143,12 @@ public class Parser {
       System.out.println(e);
       return false;
     }
-
-    return true;
-  }
-
-  public boolean run() {
-    BufferedReader tempReader = getTempBufferedReader();
-
-    List<String> procedureNames = new LinkedList<String>();
-    List<String> proceduresWithNoEnd = new LinkedList<String>();
-    int loops_with_no_end = 0;
-
-    try {
-
-      String line;
-      while ((line = tempReader.readLine()) != null) {
-        if (GrammarHelper.isComment(line))
-          System.out.println("is comment: " + line);
-
-        else if (GrammarHelper.isBlockBegin(line)) {
-          System.out.println("is block begin: " + line);
-
-          if (GrammarHelper.isLoopBegin(line)) {
-            System.out.println("is loop begin: " + line);
-            System.out.println("loop count: " + GrammarHelper.getLoopCount(line));
-            loops_with_no_end++;
-          }
-          else {
-            System.out.println("is procedure named: " + GrammarHelper.getProcedureName(line));
-            procedureNames.add(GrammarHelper.getProcedureName(line));
-            proceduresWithNoEnd.add(GrammarHelper.getProcedureName(line));
-          }
-        }
-
-        else if (GrammarHelper.isBlockEnd(line)) {
-          System.out.println("is block end: " + line);
-
-          if (GrammarHelper.isLoopEnd(line)) {
-            System.out.println("is loop end: " + line);
-            loops_with_no_end--;
-          }
-
-          else {
-            String endProcedureName = null;
-            for (String procedureName : procedureNames) {
-              if (GrammarHelper.isProcedureEnd(line, procedureName)) {
-                endProcedureName = procedureName;
-                break;
-              }
-            }
-            if (endProcedureName != null) {
-              System.out.println("is end of procedure: " + endProcedureName);
-              proceduresWithNoEnd.remove(endProcedureName);
-            }
-            else
-              throw new IllegalSyntaxException("Cannot verify syntax of end block: " + line);
-          }
-        }
-
-        else if (GrammarHelper.isWaitStatement(line)) {
-          System.out.println("is wait statement: " + line);
-          System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
-        }
-
-        else if (GrammarHelper.isDeviceSetting(line)) {
-          System.out.println("is device setting: " + line);
-          System.out.println("device: " + GrammarHelper.getDeviceType(line));
-          System.out.println("setting type: " + GrammarHelper.getSettingType(line));
-          System.out.println("setting value: " + GrammarHelper.getSettingValue(line));
-        }
-
-        else if (GrammarHelper.isControlSetting(line)) {
-          System.out.println("is control setting: " + line);
-          System.out.println("control type: " + GrammarHelper.getControlType(line));
-          System.out.println("setting type: " + GrammarHelper.getSettingType(line));
-          System.out.println("setting value: " + GrammarHelper.getSettingValue(line));
-        }
-
-        else if (procedureNames.contains(line))
-          System.out.println("is procedure call: " + line);
-
-        else if (!line.equals(""))
-          throw new IllegalSyntaxException("Syntax of line cannot be verified: " + line);
+    finally {
+      try {
+        tempReader.close();
+      } catch (IOException e) {
+        System.out.println("IOException while closing temp file: " + e);
       }
-
-      if (proceduresWithNoEnd.size() != 0)
-        throw new IllegalSyntaxException("Not all procedures have a procedure end: " + proceduresWithNoEnd.iterator());
-
-      if (loops_with_no_end != 0)
-        throw new IllegalSyntaxException("Number of BEGIN LOOP and END LOOP statements do not match: " + loops_with_no_end);
-
-    } catch (IOException e) {
-      System.out.println("lol, whut? " + e);
-      return false;
-    } catch (IllegalSyntaxException e) {
-      System.out.println("lgd, uw! " + e);
-      return false;
     }
 
     return true;
