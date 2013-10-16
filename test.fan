@@ -1,3 +1,4 @@
+// procedure declaration
 BEGIN SANITIZE
   TEMPERATURE 215F
   HUMIDITY     95%
@@ -7,8 +8,10 @@ BEGIN SANITIZE
   WAIT          5 MINUTES
 END SANITIZE
 
+// procedure call
 SANITIZE
 
+// bounded loop
 BEGIN LOOP 3
   TEMPERATURE 80C
   HUMIDITY    45%

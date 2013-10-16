@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Programmer: rhodey
@@ -53,20 +55,26 @@ public class Parser {
 
   public boolean verifySyntax() {
     BufferedReader tempReader = getTempBufferedReader();
+    List<String> procedureNames = new LinkedList<String>();
 
     try {
 
       String line;
       while ((line = tempReader.readLine()) != null) {
-        if (GrammarHelper.isBlockBegin(line)) {
+        if (GrammarHelper.isComment(line))
+          System.out.println("is comment: " + line);
+
+        else if (GrammarHelper.isBlockBegin(line)) {
           System.out.println("is block begin: " + line);
 
           if (GrammarHelper.isLoopBegin(line)) {
             System.out.println("is loop begin: " + line);
             System.out.println("loop count: " + GrammarHelper.getLoopCount(line));
           }
-          else
+          else {
             System.out.println("is procedure named: " + GrammarHelper.getProcedureName(line));
+            procedureNames.add(GrammarHelper.getProcedureName(line));
+          }
         }
 
         else if (GrammarHelper.isBlockEnd(line)) {
@@ -96,6 +104,9 @@ public class Parser {
           System.out.println("setting type: " + GrammarHelper.getSettingType(line));
           System.out.println("setting value: " + GrammarHelper.getSettingValue(line));
         }
+
+        else if (!line.equals("") && !procedureNames.contains(line))
+          throw new IllegalSyntaxException("Syntax of line cannot be verified: " + line);
       }
     } catch (IOException e) {
       System.out.println("lol, whut? " + e);

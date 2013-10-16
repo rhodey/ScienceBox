@@ -6,6 +6,8 @@ package org.anhonesteffort.sciencebox.language;
  */
 public class Grammar {
 
+  public static final String TOKEN_COMMENT_BEGIN = "//";
+
   public static final String TOKEN_BLOCK_BEGIN = "BEGIN";
   public static final String TOKEN_BLOCK_END   = "END";
 

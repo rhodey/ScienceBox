@@ -29,6 +29,10 @@ public class GrammarHelper {
       Grammar.TOKEN_CONTROL_HUMIDITY
   };
 
+  public static boolean isComment(String line) {
+    return line.startsWith(Grammar.TOKEN_COMMENT_BEGIN);
+  }
+
   public static boolean isBlockBegin(String line) {
     return line.matches("^(" + Grammar.TOKEN_BLOCK_BEGIN + ")(\\s+).*");
   }
