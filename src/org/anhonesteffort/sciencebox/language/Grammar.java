@@ -34,6 +34,7 @@ public class Grammar {
   public static final String TOKEN_CONTROL_HUMIDITY    = "HUMIDITY";
 
   public static enum SettingType {
+    ON_OFF,
     PERCENTAGE,
     CELSIUS,
     FAHRENHEIT,

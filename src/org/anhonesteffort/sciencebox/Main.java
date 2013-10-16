@@ -8,12 +8,15 @@ import org.anhonesteffort.sciencebox.hardware.active.PeltierCooler;
 import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
 import org.anhonesteffort.sciencebox.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.hardware.sensor.TemperatureSensor;
+import org.anhonesteffort.sciencebox.language.Parser;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
 import org.eclipse.jetty.server.Server;
 
+import java.io.FileInputStream;
+
 public class Main {
 
-  public static void main(String[] args) {
+  private static void stuff() {
 
     SerialPort sciencePort = new SerialPort("/dev/ttyACM0");
 
@@ -49,6 +52,25 @@ public class Main {
     } catch (Exception e) {
       System.out.println("Http server is mad: " + e);
     }
+  }
+
+  private static void otherStuff() {
+    try {
+
+      FileInputStream fileIn = new FileInputStream("/home/rhodey/dev/ScienceBox/test.fan");
+      Parser mcParse = new Parser(fileIn);
+      mcParse.verifySyntax();
+
+    } catch (Exception e) {
+      System.out.println("the sky is falling: " + e);
+    }
+  }
+
+  public static void main(String[] args) {
+
+    //stuff();
+    otherStuff();
+
   }
 
 }

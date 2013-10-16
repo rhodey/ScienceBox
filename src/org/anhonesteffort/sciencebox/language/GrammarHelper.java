@@ -49,7 +49,7 @@ public class GrammarHelper {
     if (!isLoopBegin(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN BLOCK BEGIN and/or TOKEN LOOP.");
 
-    int num_pos = line.indexOf(Grammar.TOKEN_LOOP) + 1;
+    int num_pos = line.indexOf(Grammar.TOKEN_LOOP) + Grammar.TOKEN_LOOP.length() + 1;
     String numString = line.substring(num_pos, line.length());
     return Integer.parseInt(numString);
   }
@@ -59,7 +59,7 @@ public class GrammarHelper {
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN BLOCK BEGIN.");
 
     int name_pos = Grammar.TOKEN_BLOCK_BEGIN.length() + 1;
-    String nameFound = line.substring(name_pos).trim();
+    String nameFound = line.trim().substring(name_pos);
 
     if (nameFound.length() == 0)
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN PROCEDURE NAME.");
@@ -75,7 +75,7 @@ public class GrammarHelper {
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN BLOCK END.");
 
     int name_pos = Grammar.TOKEN_BLOCK_END.length() + 1;
-    String nameFound = line.substring(name_pos).trim();
+    String nameFound = line.trim().substring(name_pos);
 
     if (nameFound.length() == 0)
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN PROCEDURE NAME.");
@@ -160,32 +160,34 @@ public class GrammarHelper {
   }
 
   public static Grammar.SettingType getSettingType(String line) throws IllegalSyntaxException {
-    if (!isDeviceSetting(line) || !isControlSetting(line))
+    if (!isDeviceSetting(line) && !isControlSetting(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE or TOKEN CONTROL TYPE.");
 
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENTAGE + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENTAGE + ")(\\s*)$"))
       return Grammar.SettingType.PERCENTAGE;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_CELSIUS + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_CELSIUS + ")(\\s*)$"))
       return Grammar.SettingType.CELSIUS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")(\\s*)$"))
       return Grammar.SettingType.FAHRENHEIT;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_MILLISECONDS + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_MILLISECONDS + ")(\\s*)$"))
       return Grammar.SettingType.MILLISECONDS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_SECONDS + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_SECONDS + ")(\\s*)$"))
       return Grammar.SettingType.SECONDS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_MINUTES + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_MINUTES + ")(\\s*)$"))
       return Grammar.SettingType.MINUTES;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_HOURS + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_HOURS + ")(\\s*)$"))
       return Grammar.SettingType.HOURS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_DAYS + ")(\\s*)$"))
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_DAYS + ")(\\s*)$"))
       return Grammar.SettingType.DAYS;
+    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)$"))
+      return Grammar.SettingType.ON_OFF;
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN SETTING TYPE " +
         "and/or TOKEN SETTING VALUE.");
   }
 
   public static double getSettingValue(String line) throws IllegalSyntaxException {
-    Pattern pattern = Pattern.compile("^(\\s*)(\\S+)(\\s+)([0-9]+)(\\s*)(\\S+)(\\s*)$");
+    Pattern pattern = Pattern.compile("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)(\\s*)$");
 
     Matcher matcher = pattern.matcher(line);
     while (matcher.find())
@@ -195,13 +197,13 @@ public class GrammarHelper {
   }
 
   public static Grammar.DeviceType getDeviceType(String line) throws IllegalSyntaxException {
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_FAN + ")(\\s+)([0-9]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_FAN + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
       return Grammar.DeviceType.FAN;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_HEATER + ")(\\s+)([0-9]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_HEATER + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
       return Grammar.DeviceType.HEATER;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_COOLER + ")(\\s+)([0-9]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_COOLER + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
       return Grammar.DeviceType.COOLER;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_HUMIDIFIER + ")(\\s+)([0-9]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_HUMIDIFIER + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
       return Grammar.DeviceType.HUMIDIFIER;
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE and/or" +
@@ -212,9 +214,9 @@ public class GrammarHelper {
     if (!isControlSetting(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN CONTROL TYPE.");
 
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_CONTROL_TEMPERATURE + ")(\\s+)([0-9]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(\\s*)(" + Grammar.TOKEN_CONTROL_TEMPERATURE + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
       return Grammar.ControlType.TEMPERATURE;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_CONTROL_HUMIDITY + ")(\\s+)([0-9]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(\\s*)(" + Grammar.TOKEN_CONTROL_HUMIDITY + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
       return Grammar.ControlType.HUMIDITY;
 
 
