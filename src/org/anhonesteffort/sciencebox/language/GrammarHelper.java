@@ -204,7 +204,7 @@ public class GrammarHelper {
       if (matcher.find()) {
         if (matcher.group(3).equals(Grammar.TOKEN_VALUE_ON))
           return 1.0;
-        if (matcher.group(3).equals(Grammar.TOKEN_VALUE_ON))
+        if (matcher.group(3).equals(Grammar.TOKEN_VALUE_OFF))
           return 0.0;
       }
     }
