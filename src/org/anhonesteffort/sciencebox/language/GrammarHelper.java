@@ -30,19 +30,19 @@ public class GrammarHelper {
   };
 
   public static boolean isBlockBegin(String line) {
-    return line.matches("^(\\s*)(" + Grammar.TOKEN_BLOCK_BEGIN + ")(\\s+).*");
+    return line.matches("^(" + Grammar.TOKEN_BLOCK_BEGIN + ")(\\s+).*");
   }
 
   public static boolean isBlockEnd(String line) {
-    return line.matches("^(\\s*)(" + Grammar.TOKEN_BLOCK_END + ")(\\s+).*");
+    return line.matches("^(" + Grammar.TOKEN_BLOCK_END + ")(\\s+).*");
   }
 
   public static boolean isLoopBegin(String line) {
-    return line.matches("^(\\s*)(" + Grammar.TOKEN_BLOCK_BEGIN + ")(\\s+)(" + Grammar.TOKEN_LOOP + ")(\\s+).*");
+    return line.matches("^(" + Grammar.TOKEN_BLOCK_BEGIN + ")(\\s+)(" + Grammar.TOKEN_LOOP + ")(\\s+).*");
   }
 
   public static boolean isLoopEnd(String line) {
-    return line.matches("^(\\s*)(" + Grammar.TOKEN_BLOCK_END + ")(\\s+)(" + Grammar.TOKEN_LOOP + ")(\\s*)$");
+    return line.matches("^(" + Grammar.TOKEN_BLOCK_END + ")(\\s+)(" + Grammar.TOKEN_LOOP + ")$");
   }
 
   public static int getLoopCount(String line) throws IllegalSyntaxException {
@@ -50,7 +50,7 @@ public class GrammarHelper {
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN BLOCK BEGIN and/or TOKEN LOOP.");
 
     int num_pos = line.indexOf(Grammar.TOKEN_LOOP) + Grammar.TOKEN_LOOP.length() + 1;
-    String numString = line.substring(num_pos, line.length());
+    String numString = line.substring(num_pos);
     return Integer.parseInt(numString);
   }
 
@@ -59,7 +59,7 @@ public class GrammarHelper {
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN BLOCK BEGIN.");
 
     int name_pos = Grammar.TOKEN_BLOCK_BEGIN.length() + 1;
-    String nameFound = line.trim().substring(name_pos);
+    String nameFound = line.substring(name_pos);
 
     if (nameFound.length() == 0)
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN PROCEDURE NAME.");
@@ -75,7 +75,7 @@ public class GrammarHelper {
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN BLOCK END.");
 
     int name_pos = Grammar.TOKEN_BLOCK_END.length() + 1;
-    String nameFound = line.trim().substring(name_pos);
+    String nameFound = line.substring(name_pos);
 
     if (nameFound.length() == 0)
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN PROCEDURE NAME.");
@@ -87,29 +87,37 @@ public class GrammarHelper {
   }
 
   public static boolean isWaitStatement(String line) {
-    return line.matches("^(\\s*)(" + Grammar.TOKEN_WAIT + ")(\\s+).*");
+    return line.matches("^(" + Grammar.TOKEN_WAIT + ")(\\s+).*");
   }
 
   private static WaitType getWaitType(String line) throws IllegalSyntaxException {
-    Pattern pattern = Pattern.compile("^(\\s*)(" + Grammar.TOKEN_WAIT + ")(\\s+)([0-9]+)(\\s*)(\\S+)(\\s*)$");
+    Pattern pattern = Pattern.compile("^(" + Grammar.TOKEN_WAIT + ")(\\s+)([0-9]+)(\\s*)(\\S+)$");
 
     Matcher matcher = pattern.matcher(line);
-    while (matcher.find())
-      System.out.println("getWaitType matcher.group() -> " + matcher.group());
+    while (matcher.find()) {
+      if (matcher.group(5).equals(Grammar.TOKEN_TYPE_MILLISECONDS))
+        return WaitType.MILLISECONDS;
+      if (matcher.group(5).equals(Grammar.TOKEN_TYPE_SECONDS))
+        return WaitType.SECONDS;
+      if (matcher.group(5).equals(Grammar.TOKEN_TYPE_MINUTES))
+        return WaitType.MINUTES;
+      if (matcher.group(5).equals(Grammar.TOKEN_TYPE_HOURS))
+        return WaitType.HOURS;
+      if (matcher.group(5).equals(Grammar.TOKEN_TYPE_DAYS))
+        return WaitType.DAYS;
+    }
 
-    return WaitType.DAYS;
-    // throw new IllegalSyntaxException("Provided line does not contain legal TOKEN WAIT TYPE.");
+    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN WAIT TYPE.");
   }
 
   private static long getWaitCount(String line) throws IllegalSyntaxException {
-    Pattern pattern = Pattern.compile("^(\\s*)(" + Grammar.TOKEN_WAIT + ")(\\s+)([0-9]+)(\\s*)(\\S+)(\\s*)$");
+    Pattern pattern = Pattern.compile("^(" + Grammar.TOKEN_WAIT + ")(\\s+)([0-9]+)(\\s*)(\\S+)$");
 
     Matcher matcher = pattern.matcher(line);
     while (matcher.find())
-      System.out.println("getWaitType matcher.group() -> " + matcher.group());
+      return Long.parseLong(matcher.group(3));
 
-    return 20000;
-    // throw new IllegalSyntaxException("Provided line does not contain legal TOKEN WAIT COUNT.");
+    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN WAIT COUNT.");
   }
 
   public static long getWaitCountMilliseconds(String line) throws IllegalSyntaxException {
@@ -124,19 +132,19 @@ public class GrammarHelper {
         break;
 
       case SECONDS:
-        wait_milliseconds = wait_milliseconds / 1000;
+        wait_milliseconds = wait_milliseconds * 1000;
         break;
 
       case MINUTES:
-        wait_milliseconds = (wait_milliseconds / 1000) / 60;
+        wait_milliseconds = (wait_milliseconds * 1000) * 60;
         break;
 
       case HOURS:
-        wait_milliseconds = ((wait_milliseconds / 1000) / 60) / 60;
+        wait_milliseconds = ((wait_milliseconds * 1000) * 60) * 60;
         break;
 
       case DAYS:
-        wait_milliseconds = (((wait_milliseconds / 1000) / 60) / 60) / 24;
+        wait_milliseconds = (((wait_milliseconds * 1000) * 60) * 60) * 24;
         break;
     }
 
@@ -145,7 +153,7 @@ public class GrammarHelper {
 
   public static boolean isDeviceSetting(String line) {
     for (int i = 0; i < DEVICE_TOKENS.length; i++) {
-      if (line.matches("^(\\s*)(" + DEVICE_TOKENS[i] + ")(\\s+).*"))
+      if (line.matches("^(" + DEVICE_TOKENS[i] + ")(\\s+).*"))
         return true;
     }
     return false;
@@ -153,7 +161,7 @@ public class GrammarHelper {
 
   public static boolean isControlSetting(String line) {
     for (int i = 0; i < CONTROL_TOKENS.length; i++) {
-      if (line.matches("^(\\s*)(" + CONTROL_TOKENS[i] + ")(\\s+).*"))
+      if (line.matches("^(" + CONTROL_TOKENS[i] + ")(\\s+).*"))
         return true;
     }
     return false;
@@ -163,23 +171,23 @@ public class GrammarHelper {
     if (!isDeviceSetting(line) && !isControlSetting(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE or TOKEN CONTROL TYPE.");
 
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENTAGE + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENTAGE + ")$"))
       return Grammar.SettingType.PERCENTAGE;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_CELSIUS + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_CELSIUS + ")$"))
       return Grammar.SettingType.CELSIUS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")$"))
       return Grammar.SettingType.FAHRENHEIT;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_MILLISECONDS + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_MILLISECONDS + ")$"))
       return Grammar.SettingType.MILLISECONDS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_SECONDS + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_SECONDS + ")$"))
       return Grammar.SettingType.SECONDS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_MINUTES + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_MINUTES + ")$"))
       return Grammar.SettingType.MINUTES;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_HOURS + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_HOURS + ")$"))
       return Grammar.SettingType.HOURS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(" + Grammar.TOKEN_TYPE_DAYS + ")(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_DAYS + ")$"))
       return Grammar.SettingType.DAYS;
-    if (line.matches("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)$"))
+    if (line.matches("^(\\S+)(\\s+)([ON,OFF]+)$"))
       return Grammar.SettingType.ON_OFF;
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN SETTING TYPE " +
@@ -187,41 +195,49 @@ public class GrammarHelper {
   }
 
   public static double getSettingValue(String line) throws IllegalSyntaxException {
-    Pattern pattern = Pattern.compile("^(\\s*)(\\S+)(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)(\\s*)$");
+    Pattern pattern;
+    Matcher matcher;
 
-    Matcher matcher = pattern.matcher(line);
-    while (matcher.find())
-      System.out.println("getWaitType matcher.group() -> " + matcher.group());
+    if (getSettingType(line) == Grammar.SettingType.ON_OFF)  {
+      pattern = Pattern.compile("^(\\S+)(\\s+)([ON,OFF]+)$");
+      matcher = pattern.matcher(line);
+      if (matcher.find()) {
+        if (matcher.group(3).equals(Grammar.TOKEN_VALUE_ON))
+          return 1.0;
+        if (matcher.group(3).equals(Grammar.TOKEN_VALUE_ON))
+          return 0.0;
+      }
+    }
+    else {
+      pattern = Pattern.compile("^(\\S+)(\\s+)([0-9]+)(\\s*)(\\S+)$");
+      matcher = pattern.matcher(line);
+      if(matcher.find())
+        return Double.parseDouble(matcher.group(3));
+    }
 
-    return 0.0;
+    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN SETTING VALUE.");
   }
 
   public static Grammar.DeviceType getDeviceType(String line) throws IllegalSyntaxException {
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_FAN + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(" + Grammar.TOKEN_DEVICE_FAN + ")(\\s+).*"))
       return Grammar.DeviceType.FAN;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_HEATER + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(" + Grammar.TOKEN_DEVICE_HEATER + ")(\\s+).*"))
       return Grammar.DeviceType.HEATER;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_COOLER + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(" + Grammar.TOKEN_DEVICE_COOLER + ")(\\s+).*"))
       return Grammar.DeviceType.COOLER;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_DEVICE_HUMIDIFIER + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(" + Grammar.TOKEN_DEVICE_HUMIDIFIER + ")(\\s+).*"))
       return Grammar.DeviceType.HUMIDIFIER;
 
-    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE and/or" +
-        "TOKEN SETTING VALUE and/or TOKEN SETTING TYPE.");
+    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE.");
   }
 
   public static Grammar.ControlType getControlType(String line) throws IllegalSyntaxException {
-    if (!isControlSetting(line))
-      throw new IllegalSyntaxException("Provided line does not contain legal TOKEN CONTROL TYPE.");
-
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_CONTROL_TEMPERATURE + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(" + Grammar.TOKEN_CONTROL_TEMPERATURE + ")(\\s+).*$"))
       return Grammar.ControlType.TEMPERATURE;
-    if (line.matches("^(\\s*)(" + Grammar.TOKEN_CONTROL_HUMIDITY + ")(\\s+)([0-9,ON,OFF]+)(\\s*)(\\S+)$"))
+    if (line.matches("^(" + Grammar.TOKEN_CONTROL_HUMIDITY + ")(\\s+).*$"))
       return Grammar.ControlType.HUMIDITY;
 
-
-    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN CONTROL TYPE " +
-        "and/or TOKEN SETTING VALUE.");
+    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN CONTROL TYPE.");
   }
 
 }

@@ -29,7 +29,7 @@ public class Parser {
 
       String line;
     while ((line = inputFileReader.readLine()) != null) {
-      tempFileWriter.append(line.toUpperCase());
+      tempFileWriter.append(line.trim().toUpperCase());
       tempFileWriter.newLine();
     }
 
@@ -79,7 +79,7 @@ public class Parser {
         }
 
         else if (GrammarHelper.isWaitStatement(line)) {
-          System.out.println("is wait statement:" + line);
+          System.out.println("is wait statement: " + line);
           System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
         }
 
