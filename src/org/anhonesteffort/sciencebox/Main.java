@@ -58,8 +58,8 @@ public class Main {
     try {
 
       FileInputStream fileIn = new FileInputStream("/home/rhodey/dev/ScienceBox/test.fan");
-      Parser mcParse = new Parser(fileIn);
-      mcParse.verifySyntax();
+      Parser fanParse = new Parser(fileIn);
+      System.out.println("result of verify: " + fanParse.verifySyntax());
 
     } catch (Exception e) {
       System.out.println("the sky is falling: " + e);

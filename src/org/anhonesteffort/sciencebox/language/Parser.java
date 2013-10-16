@@ -55,7 +55,105 @@ public class Parser {
 
   public boolean verifySyntax() {
     BufferedReader tempReader = getTempBufferedReader();
+
     List<String> procedureNames = new LinkedList<String>();
+    List<String> proceduresWithNoEnd = new LinkedList<String>();
+    int loops_with_no_end = 0;
+
+    try {
+
+      String line;
+      while ((line = tempReader.readLine()) != null) {
+        boolean line_verified = false;
+
+        if (GrammarHelper.isComment(line))
+          line_verified = true;
+
+        else if (GrammarHelper.isBlockBegin(line)) {
+          if (GrammarHelper.isLoopBegin(line)) {
+            line_verified = (GrammarHelper.getLoopCount(line) != 0);
+            loops_with_no_end++;
+          }
+          else {
+            procedureNames.add(GrammarHelper.getProcedureName(line));
+            proceduresWithNoEnd.add(GrammarHelper.getProcedureName(line));
+            line_verified = true;
+          }
+        }
+
+        else if (GrammarHelper.isBlockEnd(line)) {
+          if (GrammarHelper.isLoopEnd(line)) {
+            line_verified = true;
+            loops_with_no_end--;
+          }
+
+          else {
+            String endProcedureName = null;
+            for (String procedureName : procedureNames) {
+              if (GrammarHelper.isProcedureEnd(line, procedureName)) {
+                endProcedureName = procedureName;
+                break;
+              }
+            }
+            if (endProcedureName != null) {
+              line_verified = true;
+              proceduresWithNoEnd.remove(endProcedureName);
+            }
+            else
+              throw new IllegalSyntaxException("Cannot verify syntax of end block: " + line);
+          }
+        }
+
+        else if (GrammarHelper.isWaitStatement(line))
+          line_verified = (GrammarHelper.getWaitCountMilliseconds(line) != 0);
+
+        else if (GrammarHelper.isDeviceSetting(line)) {
+          GrammarHelper.getDeviceType(line);
+          GrammarHelper.getSettingType(line);
+          GrammarHelper.getSettingValue(line);
+          line_verified = true;
+        }
+
+        else if (GrammarHelper.isControlSetting(line)) {
+          GrammarHelper.getControlType(line);
+          GrammarHelper.getSettingType(line);
+          GrammarHelper.getSettingValue(line);
+          line_verified = true;
+        }
+
+        else if (procedureNames.contains(line))
+          line_verified = true;
+
+        else if (line.equals(""))
+          line_verified = true;
+
+        if (!line_verified)
+          throw new IllegalSyntaxException("Syntax of line cannot be verified: " + line);
+      }
+
+      if (proceduresWithNoEnd.size() != 0)
+        throw new IllegalSyntaxException("Not all procedures have a procedure end: " + proceduresWithNoEnd.iterator());
+
+      if (loops_with_no_end != 0)
+        throw new IllegalSyntaxException("Number of BEGIN LOOP and END LOOP statements do not match: " + loops_with_no_end);
+
+    } catch (IOException e) {
+      System.out.println("IOException while verifying syntax: " + e);
+      return false;
+    } catch (IllegalSyntaxException e) {
+      System.out.println(e);
+      return false;
+    }
+
+    return true;
+  }
+
+  public boolean run() {
+    BufferedReader tempReader = getTempBufferedReader();
+
+    List<String> procedureNames = new LinkedList<String>();
+    List<String> proceduresWithNoEnd = new LinkedList<String>();
+    int loops_with_no_end = 0;
 
     try {
 
@@ -70,20 +168,38 @@ public class Parser {
           if (GrammarHelper.isLoopBegin(line)) {
             System.out.println("is loop begin: " + line);
             System.out.println("loop count: " + GrammarHelper.getLoopCount(line));
+            loops_with_no_end++;
           }
           else {
             System.out.println("is procedure named: " + GrammarHelper.getProcedureName(line));
             procedureNames.add(GrammarHelper.getProcedureName(line));
+            proceduresWithNoEnd.add(GrammarHelper.getProcedureName(line));
           }
         }
 
         else if (GrammarHelper.isBlockEnd(line)) {
           System.out.println("is block end: " + line);
 
-          if (GrammarHelper.isLoopEnd(line))
+          if (GrammarHelper.isLoopEnd(line)) {
             System.out.println("is loop end: " + line);
-          else if (GrammarHelper.isProcedureEnd(line, "SANITIZE"))
-            System.out.println("is end of " + "SANITIZE" + " procedure.");
+            loops_with_no_end--;
+          }
+
+          else {
+            String endProcedureName = null;
+            for (String procedureName : procedureNames) {
+              if (GrammarHelper.isProcedureEnd(line, procedureName)) {
+                endProcedureName = procedureName;
+                break;
+              }
+            }
+            if (endProcedureName != null) {
+              System.out.println("is end of procedure: " + endProcedureName);
+              proceduresWithNoEnd.remove(endProcedureName);
+            }
+            else
+              throw new IllegalSyntaxException("Cannot verify syntax of end block: " + line);
+          }
         }
 
         else if (GrammarHelper.isWaitStatement(line)) {
@@ -105,15 +221,26 @@ public class Parser {
           System.out.println("setting value: " + GrammarHelper.getSettingValue(line));
         }
 
-        else if (!line.equals("") && !procedureNames.contains(line))
+        else if (procedureNames.contains(line))
+          System.out.println("is procedure call: " + line);
+
+        else if (!line.equals(""))
           throw new IllegalSyntaxException("Syntax of line cannot be verified: " + line);
       }
+
+      if (proceduresWithNoEnd.size() != 0)
+        throw new IllegalSyntaxException("Not all procedures have a procedure end: " + proceduresWithNoEnd.iterator());
+
+      if (loops_with_no_end != 0)
+        throw new IllegalSyntaxException("Number of BEGIN LOOP and END LOOP statements do not match: " + loops_with_no_end);
+
     } catch (IOException e) {
       System.out.println("lol, whut? " + e);
+      return false;
     } catch (IllegalSyntaxException e) {
       System.out.println("lgd, uw! " + e);
+      return false;
     }
-
 
     return true;
   }
