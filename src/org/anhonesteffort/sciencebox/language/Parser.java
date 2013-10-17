@@ -141,7 +141,7 @@ public class Parser {
       }
 
       if (proceduresWithNoEnd.size() != 0)
-        throw new IllegalSyntaxException("Not all procedures have a procedure end.");
+        throw new IllegalSyntaxException("Not all procedures have an end.");
 
       if (loops_with_no_end != 0)
         throw new IllegalSyntaxException("Number of BEGIN LOOP and END LOOP statements do not match: " + loops_with_no_end);

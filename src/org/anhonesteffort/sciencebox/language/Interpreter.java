@@ -14,9 +14,11 @@ import java.util.Stack;
  */
 public class Interpreter implements Runnable {
 
+  private Parser parser;
   private BufferedReader tempFileReader;
   private Map<String, Integer> procedureNames = new HashMap<String, Integer>();
   private Stack<Integer> returnStack = new Stack<Integer>();
+  private boolean no_op = false;
   private int line_number = 0;
 
   private List<InterpreterListener> listeners = new LinkedList<InterpreterListener>();
@@ -25,6 +27,7 @@ public class Interpreter implements Runnable {
     if (!parser.isSyntaxCorrect())
       throw new IllegalArgumentException("Provided parser cannot verify syntax of its FanOn script.");
 
+    this.parser = parser;
     tempFileReader = parser.getTempFileReader();
   }
 
@@ -39,13 +42,19 @@ public class Interpreter implements Runnable {
   private void goToLine(int dest_line_number) {
     try {
 
-      tempFileReader.reset();
+      tempFileReader.close();
+      tempFileReader = parser.getTempFileReader();
       line_number = 0;
-      while (line_number > dest_line_number && tempFileReader.readLine() != null) { }
+      while (line_number < dest_line_number && tempFileReader.readLine() != null) { line_number++; }
 
     } catch (IOException e) {
       System.out.println("IOException while goToLine(" + dest_line_number + "): " + e);
     }
+  }
+
+  private void goToProcedure(String procedureName) {
+    returnStack.push(line_number + 1);
+    goToLine(procedureNames.get(procedureName) + 1);
   }
 
   private void interpretLine(String line) throws IOException {
@@ -53,17 +62,21 @@ public class Interpreter implements Runnable {
 
       if (GrammarHelper.isBlockBegin(line)) {
         if (GrammarHelper.isLoopBegin(line)) {
-          System.out.println("is begin of " + GrammarHelper.getLoopCount(line) + " loops.");
+          if (!no_op)
+            System.out.println("is begin of " + GrammarHelper.getLoopCount(line) + " loops.");
         }
         else {
           System.out.println("is begin of procedure named: " + GrammarHelper.getProcedureName(line));
           procedureNames.put(GrammarHelper.getProcedureName(line), line_number);
+          no_op = true;
         }
       }
 
       else if (GrammarHelper.isBlockEnd(line)) {
-        if (GrammarHelper.isLoopEnd(line))
-          System.out.println("is loop end: " + line);
+        if (GrammarHelper.isLoopEnd(line)) {
+          if (!no_op)
+            System.out.println("is loop end: " + line);
+        }
 
         else {
           String endProcedureName = null;
@@ -74,29 +87,42 @@ public class Interpreter implements Runnable {
             }
           }
           System.out.println("is end of procedure named: " + endProcedureName);
+
+          if (returnStack.size() > 0)
+            goToLine(returnStack.pop());
+          no_op = false;
         }
       }
 
       else if (GrammarHelper.isWaitStatement(line)) {
-        System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
+        if (!no_op)
+          System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
       }
 
       else if (GrammarHelper.isDeviceSetting(line)) {
-        for (InterpreterListener listener : listeners)
-          listener.onDeviceSetting(GrammarHelper.getDeviceType(line),
-              GrammarHelper.getSettingType(line),
-              GrammarHelper.getSettingValue(line));
+        if (!no_op) {
+          for (InterpreterListener listener : listeners)
+            listener.onDeviceSetting(GrammarHelper.getDeviceType(line),
+                GrammarHelper.getSettingType(line),
+                GrammarHelper.getSettingValue(line));
+        }
       }
 
       else if (GrammarHelper.isControlSetting(line)) {
-        for (InterpreterListener listener : listeners)
-          listener.onControlSetting(GrammarHelper.getControlType(line),
-              GrammarHelper.getSettingType(line),
-              GrammarHelper.getSettingValue(line));
+        if (!no_op) {
+          for (InterpreterListener listener : listeners)
+            listener.onControlSetting(GrammarHelper.getControlType(line),
+                GrammarHelper.getSettingType(line),
+                GrammarHelper.getSettingValue(line));
+        }
       }
 
-      else if (procedureNames.get(line) != null)
-        System.out.println("is procedure call: " + line + " which is on line #" + procedureNames.get(line));
+      else if (procedureNames.get(line) != null) {
+        if (!no_op) {
+          System.out.println("is procedure call to " + line);
+          goToProcedure(line);
+        }
+      }
 
       line_number++;
     } catch (IllegalSyntaxException e) {
