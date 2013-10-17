@@ -54,11 +54,6 @@ public class Interpreter implements Runnable {
     }
   }
 
-  private void goToProcedure(String procedureName) {
-    procedureReturnStack.push(line_number + 1);
-    goToLine(procedureNames.get(procedureName));
-  }
-
   private void interpretLine(String line) throws IOException {
     try {
 
@@ -123,7 +118,8 @@ public class Interpreter implements Runnable {
 
       else if (procedureNames.get(line) != null) {
         if (exec) {
-          goToProcedure(line);
+          procedureReturnStack.push(line_number + 1);
+          goToLine(procedureNames.get(line));
           line_number--;
         }
       }
