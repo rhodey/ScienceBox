@@ -1,4 +1,7 @@
-package org.anhonesteffort.sciencebox.language;
+package org.anhonesteffort.sciencebox;
+
+import org.anhonesteffort.sciencebox.language.Grammar;
+import org.anhonesteffort.sciencebox.language.InterpreterListener;
 
 /**
  * Programmer: rhodey

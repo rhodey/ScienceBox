@@ -18,7 +18,7 @@ public class Interpreter implements Runnable {
   private BufferedReader tempFileReader;
   private Map<String, Integer> procedureNames = new HashMap<String, Integer>();
   private Stack<Integer> returnStack = new Stack<Integer>();
-  private boolean no_op = false;
+  private boolean exec = true;
   private int line_number = 0;
 
   private List<InterpreterListener> listeners = new LinkedList<InterpreterListener>();
@@ -54,7 +54,7 @@ public class Interpreter implements Runnable {
 
   private void goToProcedure(String procedureName) {
     returnStack.push(line_number + 1);
-    goToLine(procedureNames.get(procedureName) + 1);
+    goToLine(procedureNames.get(procedureName));
   }
 
   private void interpretLine(String line) throws IOException {
@@ -62,19 +62,19 @@ public class Interpreter implements Runnable {
 
       if (GrammarHelper.isBlockBegin(line)) {
         if (GrammarHelper.isLoopBegin(line)) {
-          if (!no_op)
+          if (exec)
             System.out.println("is begin of " + GrammarHelper.getLoopCount(line) + " loops.");
         }
         else {
           System.out.println("is begin of procedure named: " + GrammarHelper.getProcedureName(line));
-          procedureNames.put(GrammarHelper.getProcedureName(line), line_number);
-          no_op = true;
+          procedureNames.put(GrammarHelper.getProcedureName(line), line_number + 1);
+          exec = false;
         }
       }
 
       else if (GrammarHelper.isBlockEnd(line)) {
         if (GrammarHelper.isLoopEnd(line)) {
-          if (!no_op)
+          if (exec)
             System.out.println("is loop end: " + line);
         }
 
@@ -88,19 +88,21 @@ public class Interpreter implements Runnable {
           }
           System.out.println("is end of procedure named: " + endProcedureName);
 
-          if (returnStack.size() > 0)
+          if (returnStack.size() > 0) {
             goToLine(returnStack.pop());
-          no_op = false;
+            line_number--;
+          }
+          exec = true;
         }
       }
 
       else if (GrammarHelper.isWaitStatement(line)) {
-        if (!no_op)
+        if (exec)
           System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
       }
 
       else if (GrammarHelper.isDeviceSetting(line)) {
-        if (!no_op) {
+        if (exec) {
           for (InterpreterListener listener : listeners)
             listener.onDeviceSetting(GrammarHelper.getDeviceType(line),
                 GrammarHelper.getSettingType(line),
@@ -109,7 +111,7 @@ public class Interpreter implements Runnable {
       }
 
       else if (GrammarHelper.isControlSetting(line)) {
-        if (!no_op) {
+        if (exec) {
           for (InterpreterListener listener : listeners)
             listener.onControlSetting(GrammarHelper.getControlType(line),
                 GrammarHelper.getSettingType(line),
@@ -118,13 +120,13 @@ public class Interpreter implements Runnable {
       }
 
       else if (procedureNames.get(line) != null) {
-        if (!no_op) {
+        if (exec) {
           System.out.println("is procedure call to " + line);
           goToProcedure(line);
+          line_number--;
         }
       }
 
-      line_number++;
     } catch (IllegalSyntaxException e) {
       System.out.println("Syntax *was* correct, what happened?! " + e);
     }
@@ -143,6 +145,7 @@ public class Interpreter implements Runnable {
           listener.onInterpretNextLine(line_number);
 
         interpretLine(line);
+        line_number++;
       }
 
       for (InterpreterListener listener : listeners)

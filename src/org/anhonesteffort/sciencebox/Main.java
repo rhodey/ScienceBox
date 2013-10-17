@@ -10,7 +10,6 @@ import org.anhonesteffort.sciencebox.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.hardware.sensor.TemperatureSensor;
 import org.anhonesteffort.sciencebox.language.Interpreter;
 import org.anhonesteffort.sciencebox.language.Parser;
-import org.anhonesteffort.sciencebox.language.SimpleExecuter;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
 import org.eclipse.jetty.server.Server;
 
