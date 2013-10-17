@@ -90,14 +90,6 @@ public class Interpreter implements Runnable {
         }
 
         else {
-          String endProcedureName = null;
-          for (String procedureName : procedureNames.keySet()) {
-            if (GrammarHelper.isProcedureEnd(line, procedureName)) {
-              endProcedureName = procedureName;
-              break;
-            }
-          }
-
           if (!procedureReturnStack.empty()) {
             goToLine(procedureReturnStack.pop());
             line_number--;
