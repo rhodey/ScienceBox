@@ -16,12 +16,14 @@ public class Interpreter implements Runnable {
 
   private Parser parser;
   private BufferedReader tempFileReader;
+  private List<InterpreterListener> listeners = new LinkedList<InterpreterListener>();
+
   private Map<String, Integer> procedureNames = new HashMap<String, Integer>();
-  private Stack<Integer> returnStack = new Stack<Integer>();
+  private Stack<Integer> procedureReturnStack = new Stack<Integer>();
+  private Stack<LoopRecord> loopReturnStack = new Stack<LoopRecord>();
+
   private boolean exec = true;
   private int line_number = 0;
-
-  private List<InterpreterListener> listeners = new LinkedList<InterpreterListener>();
 
   public Interpreter(Parser parser) {
     if (!parser.isSyntaxCorrect())
@@ -53,7 +55,7 @@ public class Interpreter implements Runnable {
   }
 
   private void goToProcedure(String procedureName) {
-    returnStack.push(line_number + 1);
+    procedureReturnStack.push(line_number + 1);
     goToLine(procedureNames.get(procedureName));
   }
 
@@ -63,10 +65,9 @@ public class Interpreter implements Runnable {
       if (GrammarHelper.isBlockBegin(line)) {
         if (GrammarHelper.isLoopBegin(line)) {
           if (exec)
-            System.out.println("is begin of " + GrammarHelper.getLoopCount(line) + " loops.");
+            loopReturnStack.push(new LoopRecord(line_number + 1, GrammarHelper.getLoopCount(line)));
         }
         else {
-          System.out.println("is begin of procedure named: " + GrammarHelper.getProcedureName(line));
           procedureNames.put(GrammarHelper.getProcedureName(line), line_number + 1);
           exec = false;
         }
@@ -74,8 +75,18 @@ public class Interpreter implements Runnable {
 
       else if (GrammarHelper.isBlockEnd(line)) {
         if (GrammarHelper.isLoopEnd(line)) {
-          if (exec)
-            System.out.println("is loop end: " + line);
+          if (exec) {
+            if (!loopReturnStack.empty()) {
+              loopReturnStack.peek().loop_count--;
+
+              if (loopReturnStack.peek().loop_count > 0) {
+                goToLine(loopReturnStack.peek().line_number);
+                line_number--;
+              }
+              else
+                loopReturnStack.pop();
+            }
+          }
         }
 
         else {
@@ -86,10 +97,9 @@ public class Interpreter implements Runnable {
               break;
             }
           }
-          System.out.println("is end of procedure named: " + endProcedureName);
 
-          if (returnStack.size() > 0) {
-            goToLine(returnStack.pop());
+          if (!procedureReturnStack.empty()) {
+            goToLine(procedureReturnStack.pop());
             line_number--;
           }
           exec = true;
@@ -121,7 +131,6 @@ public class Interpreter implements Runnable {
 
       else if (procedureNames.get(line) != null) {
         if (exec) {
-          System.out.println("is procedure call to " + line);
           goToProcedure(line);
           line_number--;
         }
@@ -154,6 +163,18 @@ public class Interpreter implements Runnable {
     } catch (IOException e) {
       System.out.println("IOException while interpreting script: " + e);
     }
+  }
+
+  private class LoopRecord {
+
+    public int line_number;
+    public int loop_count;
+
+    public LoopRecord(int line_number, int loop_count) {
+      this.line_number = line_number;
+      this.loop_count = loop_count;
+    }
+
   }
 
 }
