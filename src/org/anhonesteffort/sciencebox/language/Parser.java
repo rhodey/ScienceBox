@@ -74,6 +74,13 @@ public class Parser {
             loops_with_no_end++;
           }
           else {
+            if (loops_with_no_end > 0)
+              throw new IllegalSyntaxException("Procedure declarations not allowed inside loops.");
+
+            if (procedureNames.contains(GrammarHelper.getProcedureName(line)))
+              throw new IllegalSyntaxException("Procedure " + GrammarHelper.getProcedureName(line) +
+                  " has already been declared.");
+
             procedureNames.add(GrammarHelper.getProcedureName(line));
             proceduresWithNoEnd.add(GrammarHelper.getProcedureName(line));
             line_verified = true;

@@ -2,8 +2,11 @@ package org.anhonesteffort.sciencebox.language;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Programmer: rhodey
@@ -12,7 +15,8 @@ import java.util.List;
 public class Interpreter implements Runnable {
 
   private BufferedReader tempFileReader;
-  private List<String> procedureNames = new LinkedList<String>();
+  private Map<String, Integer> procedureNames = new HashMap<String, Integer>();
+  private Stack<Integer> returnStack = new Stack<Integer>();
   private int line_number = 0;
 
   private List<InterpreterListener> listeners = new LinkedList<InterpreterListener>();
@@ -32,6 +36,18 @@ public class Interpreter implements Runnable {
     listeners.remove(listener);
   }
 
+  private void goToLine(int dest_line_number) {
+    try {
+
+      tempFileReader.reset();
+      line_number = 0;
+      while (line_number > dest_line_number && tempFileReader.readLine() != null) { }
+
+    } catch (IOException e) {
+      System.out.println("IOException while goToLine(" + dest_line_number + "): " + e);
+    }
+  }
+
   private void interpretLine(String line) throws IOException {
     try {
 
@@ -41,7 +57,7 @@ public class Interpreter implements Runnable {
         }
         else {
           System.out.println("is begin of procedure named: " + GrammarHelper.getProcedureName(line));
-          procedureNames.add(GrammarHelper.getProcedureName(line));
+          procedureNames.put(GrammarHelper.getProcedureName(line), line_number);
         }
       }
 
@@ -51,7 +67,7 @@ public class Interpreter implements Runnable {
 
         else {
           String endProcedureName = null;
-          for (String procedureName : procedureNames) {
+          for (String procedureName : procedureNames.keySet()) {
             if (GrammarHelper.isProcedureEnd(line, procedureName)) {
               endProcedureName = procedureName;
               break;
@@ -79,8 +95,8 @@ public class Interpreter implements Runnable {
               GrammarHelper.getSettingValue(line));
       }
 
-      else if (procedureNames.contains(line))
-        System.out.println("is procedure call: " + line);
+      else if (procedureNames.get(line) != null)
+        System.out.println("is procedure call: " + line + " which is on line #" + procedureNames.get(line));
 
       line_number++;
     } catch (IllegalSyntaxException e) {
