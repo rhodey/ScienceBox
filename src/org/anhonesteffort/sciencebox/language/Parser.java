@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class Parser {
 
   private static final String TEMP_FILE_NAME = "FanOn.temp";
 
-  public Parser(FileInputStream inputFile) throws IOException {
+  public Parser(InputStream inputFile) throws IOException {
     DataInputStream in = new DataInputStream(inputFile);
     InputStreamReader inReader = new InputStreamReader(in);
     BufferedReader inputFileReader = new BufferedReader(inReader);
