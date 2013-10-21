@@ -60,11 +60,11 @@ public class Main {
 
       FileInputStream fileIn = new FileInputStream("/home/rhodey/dev/ScienceBox/test.fan");
       Parser fanParse = new Parser(fileIn);
-      Interpreter fanInterpret = new Interpreter(fanParse);
-      SimpleExecuter executer = new SimpleExecuter();
-
       System.out.println("FanOn script has correct syntax? " + fanParse.isSyntaxCorrect());
-      fanInterpret.addInterpreterListener(executer);
+
+      Interpreter fanInterpret = new Interpreter(fanParse);
+      SimpleExecutor executor = new SimpleExecutor();
+      fanInterpret.addInterpreterListener(executor);
       fanInterpret.run();
 
     } catch (Exception e) {

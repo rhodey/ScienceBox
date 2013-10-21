@@ -39,7 +39,10 @@ public class Grammar {
     ON_OFF,
     PERCENT,
     CELSIUS,
-    FAHRENHEIT,
+    FAHRENHEIT
+  }
+
+  public static enum WaitType {
     MILLISECONDS,
     SECONDS,
     MINUTES,

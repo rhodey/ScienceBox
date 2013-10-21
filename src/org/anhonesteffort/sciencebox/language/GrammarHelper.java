@@ -9,14 +9,6 @@ import java.util.regex.Pattern;
  */
 public class GrammarHelper {
 
-  private static enum WaitType {
-    MILLISECONDS,
-    SECONDS,
-    MINUTES,
-    HOURS,
-    DAYS
-  }
-
   private static final String[] DEVICE_TOKENS = {
       Grammar.TOKEN_DEVICE_FAN,
       Grammar.TOKEN_DEVICE_HEATER,
@@ -94,21 +86,21 @@ public class GrammarHelper {
     return line.matches("^(" + Grammar.TOKEN_WAIT + ")(\\s+).*");
   }
 
-  private static WaitType getWaitType(String line) throws IllegalSyntaxException {
+  private static Grammar.WaitType getWaitType(String line) throws IllegalSyntaxException {
     Pattern pattern = Pattern.compile("^(" + Grammar.TOKEN_WAIT + ")(\\s+)([0-9]+)(\\s*)(\\S+)$");
 
     Matcher matcher = pattern.matcher(line);
     while (matcher.find()) {
       if (matcher.group(5).equals(Grammar.TOKEN_TYPE_MILLISECONDS))
-        return WaitType.MILLISECONDS;
+        return Grammar.WaitType.MILLISECONDS;
       if (matcher.group(5).equals(Grammar.TOKEN_TYPE_SECONDS))
-        return WaitType.SECONDS;
+        return Grammar.WaitType.SECONDS;
       if (matcher.group(5).equals(Grammar.TOKEN_TYPE_MINUTES))
-        return WaitType.MINUTES;
+        return Grammar.WaitType.MINUTES;
       if (matcher.group(5).equals(Grammar.TOKEN_TYPE_HOURS))
-        return WaitType.HOURS;
+        return Grammar.WaitType.HOURS;
       if (matcher.group(5).equals(Grammar.TOKEN_TYPE_DAYS))
-        return WaitType.DAYS;
+        return Grammar.WaitType.DAYS;
     }
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN WAIT TYPE.");
@@ -128,7 +120,7 @@ public class GrammarHelper {
     if (!isWaitStatement(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN WAIT.");
 
-    WaitType waitType = getWaitType(line);
+    Grammar.WaitType waitType = getWaitType(line);
     long wait_milliseconds = getWaitCount(line);
 
     switch (waitType) {
@@ -181,16 +173,6 @@ public class GrammarHelper {
       return Grammar.SettingType.CELSIUS;
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")$"))
       return Grammar.SettingType.FAHRENHEIT;
-    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_MILLISECONDS + ")$"))
-      return Grammar.SettingType.MILLISECONDS;
-    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_SECONDS + ")$"))
-      return Grammar.SettingType.SECONDS;
-    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_MINUTES + ")$"))
-      return Grammar.SettingType.MINUTES;
-    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_HOURS + ")$"))
-      return Grammar.SettingType.HOURS;
-    if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_DAYS + ")$"))
-      return Grammar.SettingType.DAYS;
     if (line.matches("^(\\S+)(\\s+)([ON,OFF]+)$"))
       return Grammar.SettingType.ON_OFF;
 

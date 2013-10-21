@@ -5,9 +5,9 @@ import org.anhonesteffort.sciencebox.language.InterpreterListener;
 
 /**
  * Programmer: rhodey
- * Date: 10/16/13
+ * Date: 10/20/13
  */
-public class SimpleExecuter implements InterpreterListener {
+public class ScienceExecutor implements InterpreterListener {
 
   @Override
   public void onInterpretBegin() {
@@ -33,4 +33,5 @@ public class SimpleExecuter implements InterpreterListener {
   public void onControlSetting(Grammar.ControlType controlType, Grammar.SettingType settingType, double setting_value) {
     System.out.println("Set control " + controlType + " to " + setting_value + " " + settingType);
   }
+
 }
