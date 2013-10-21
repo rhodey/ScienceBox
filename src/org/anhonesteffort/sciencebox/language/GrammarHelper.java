@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
  */
 public class GrammarHelper {
 
-  private static final String[] DEVICE_TOKENS = {
-      Grammar.TOKEN_DEVICE_FAN,
-      Grammar.TOKEN_DEVICE_HEATER,
-      Grammar.TOKEN_DEVICE_COOLER,
-      Grammar.TOKEN_DEVICE_HUMIDIFIER
+  private static final String[] HARDWARE_TOKENS = {
+      Grammar.TOKEN_HARDWARE_FAN,
+      Grammar.TOKEN_HARDWARE_HEATER,
+      Grammar.TOKEN_HARDWARE_COOLER,
+      Grammar.TOKEN_HARDWARE_HUMIDIFIER
   };
 
   private static final String[] CONTROL_TOKENS = {
@@ -147,9 +147,9 @@ public class GrammarHelper {
     return wait_milliseconds;
   }
 
-  public static boolean isDeviceSetting(String line) {
-    for (int i = 0; i < DEVICE_TOKENS.length; i++) {
-      if (line.matches("^(" + DEVICE_TOKENS[i] + ")(\\s+).*"))
+  public static boolean isHardwareSetting(String line) {
+    for (int i = 0; i < HARDWARE_TOKENS.length; i++) {
+      if (line.matches("^(" + HARDWARE_TOKENS[i] + ")(\\s+).*"))
         return true;
     }
     return false;
@@ -164,8 +164,8 @@ public class GrammarHelper {
   }
 
   public static Grammar.SettingType getSettingType(String line) throws IllegalSyntaxException {
-    if (!isDeviceSetting(line) && !isControlSetting(line))
-      throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE or TOKEN CONTROL TYPE.");
+    if (!isHardwareSetting(line) && !isControlSetting(line))
+      throw new IllegalSyntaxException("Provided line does not contain legal TOKEN HARDWARE TYPE or TOKEN CONTROL TYPE.");
 
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENT + ")$"))
       return Grammar.SettingType.PERCENT;
@@ -204,17 +204,17 @@ public class GrammarHelper {
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN SETTING VALUE.");
   }
 
-  public static Grammar.DeviceType getDeviceType(String line) throws IllegalSyntaxException {
-    if (line.matches("^(" + Grammar.TOKEN_DEVICE_FAN + ")(\\s+).*"))
-      return Grammar.DeviceType.FAN;
-    if (line.matches("^(" + Grammar.TOKEN_DEVICE_HEATER + ")(\\s+).*"))
-      return Grammar.DeviceType.HEATER;
-    if (line.matches("^(" + Grammar.TOKEN_DEVICE_COOLER + ")(\\s+).*"))
-      return Grammar.DeviceType.COOLER;
-    if (line.matches("^(" + Grammar.TOKEN_DEVICE_HUMIDIFIER + ")(\\s+).*"))
-      return Grammar.DeviceType.HUMIDIFIER;
+  public static Grammar.HardwareType getHardwareType(String line) throws IllegalSyntaxException {
+    if (line.matches("^(" + Grammar.TOKEN_HARDWARE_FAN + ")(\\s+).*"))
+      return Grammar.HardwareType.FAN;
+    if (line.matches("^(" + Grammar.TOKEN_HARDWARE_HEATER + ")(\\s+).*"))
+      return Grammar.HardwareType.HEATER;
+    if (line.matches("^(" + Grammar.TOKEN_HARDWARE_COOLER + ")(\\s+).*"))
+      return Grammar.HardwareType.COOLER;
+    if (line.matches("^(" + Grammar.TOKEN_HARDWARE_HUMIDIFIER + ")(\\s+).*"))
+      return Grammar.HardwareType.HUMIDIFIER;
 
-    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN DEVICE TYPE.");
+    throw new IllegalSyntaxException("Provided line does not contain legal TOKEN HARDWARE TYPE.");
   }
 
   public static Grammar.ControlType getControlType(String line) throws IllegalSyntaxException {

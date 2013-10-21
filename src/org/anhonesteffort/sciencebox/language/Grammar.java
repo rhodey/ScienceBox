@@ -27,10 +27,10 @@ public class Grammar {
 
   public static final String TOKEN_WAIT = "WAIT";
 
-  public static final String TOKEN_DEVICE_FAN        = "FAN";
-  public static final String TOKEN_DEVICE_HEATER     = "HEATER";
-  public static final String TOKEN_DEVICE_COOLER     = "COOLER";
-  public static final String TOKEN_DEVICE_HUMIDIFIER = "HUMIDIFIER";
+  public static final String TOKEN_HARDWARE_FAN        = "FAN";
+  public static final String TOKEN_HARDWARE_HEATER     = "HEATER";
+  public static final String TOKEN_HARDWARE_COOLER     = "COOLER";
+  public static final String TOKEN_HARDWARE_HUMIDIFIER = "HUMIDIFIER";
 
   public static final String TOKEN_CONTROL_TEMPERATURE = "TEMPERATURE";
   public static final String TOKEN_CONTROL_HUMIDITY    = "HUMIDITY";
@@ -50,7 +50,7 @@ public class Grammar {
     DAYS
   }
 
-  public static enum DeviceType {
+  public static enum HardwareType {
     FAN,
     HEATER,
     COOLER,

@@ -1,4 +1,4 @@
-package org.anhonesteffort.sciencebox.hardware.sensor;
+package org.anhonesteffort.sciencebox.hardware.passive;
 
 /**
  * Programmer: rhodey

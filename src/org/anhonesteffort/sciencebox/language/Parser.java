@@ -117,8 +117,8 @@ public class Parser {
         else if (GrammarHelper.isWaitStatement(line))
           line_verified = (GrammarHelper.getWaitCountMilliseconds(line) != 0);
 
-        else if (GrammarHelper.isDeviceSetting(line)) {
-          GrammarHelper.getDeviceType(line);
+        else if (GrammarHelper.isHardwareSetting(line)) {
+          GrammarHelper.getHardwareType(line);
           GrammarHelper.getSettingType(line);
           GrammarHelper.getSettingValue(line);
           line_verified = true;

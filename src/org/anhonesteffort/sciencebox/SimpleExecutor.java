@@ -25,8 +25,8 @@ public class SimpleExecutor implements InterpreterListener {
   }
 
   @Override
-  public void onDeviceSetting(Grammar.DeviceType deviceType, Grammar.SettingType settingType, double setting_value) {
-    System.out.println("Set device " + deviceType + " to " + setting_value + " " + settingType);
+  public void onHardwareSetting(Grammar.HardwareType hardwareType, Grammar.SettingType settingType, double setting_value) {
+    System.out.println("Set device " + hardwareType + " to " + setting_value + " " + settingType);
   }
 
   @Override

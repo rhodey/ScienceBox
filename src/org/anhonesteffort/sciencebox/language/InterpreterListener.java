@@ -12,7 +12,7 @@ public interface InterpreterListener {
 
   public void onInterpretComplete();
 
-  public void onDeviceSetting(Grammar.DeviceType deviceType, Grammar.SettingType settingType, double setting_value);
+  public void onHardwareSetting(Grammar.HardwareType hardwareType, Grammar.SettingType settingType, double setting_value);
 
   public void onControlSetting(Grammar.ControlType controlType, Grammar.SettingType settingType, double setting_value);
 

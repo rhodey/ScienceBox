@@ -98,10 +98,10 @@ public class Interpreter implements Runnable {
           System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
       }
 
-      else if (GrammarHelper.isDeviceSetting(line)) {
+      else if (GrammarHelper.isHardwareSetting(line)) {
         if (exec) {
           for (InterpreterListener listener : listeners)
-            listener.onDeviceSetting(GrammarHelper.getDeviceType(line),
+            listener.onHardwareSetting(GrammarHelper.getHardwareType(line),
                 GrammarHelper.getSettingType(line),
                 GrammarHelper.getSettingValue(line));
         }

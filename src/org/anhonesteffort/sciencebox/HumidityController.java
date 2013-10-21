@@ -1,8 +1,8 @@
 package org.anhonesteffort.sciencebox;
 
 import org.anhonesteffort.sciencebox.hardware.active.Humidifier;
-import org.anhonesteffort.sciencebox.hardware.sensor.HumiditySensor;
-import org.anhonesteffort.sciencebox.hardware.sensor.SensorListener;
+import org.anhonesteffort.sciencebox.hardware.passive.HumiditySensor;
+import org.anhonesteffort.sciencebox.hardware.passive.SensorListener;
 
 /**
  * Programmer: rhodey

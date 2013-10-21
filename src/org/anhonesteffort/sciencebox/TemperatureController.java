@@ -2,8 +2,8 @@ package org.anhonesteffort.sciencebox;
 
 import org.anhonesteffort.sciencebox.hardware.active.PeltierCooler;
 import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
-import org.anhonesteffort.sciencebox.hardware.sensor.SensorListener;
-import org.anhonesteffort.sciencebox.hardware.sensor.TemperatureSensor;
+import org.anhonesteffort.sciencebox.hardware.passive.SensorListener;
+import org.anhonesteffort.sciencebox.hardware.passive.TemperatureSensor;
 
 /**
  * Programmer: rhodey
