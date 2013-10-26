@@ -1,8 +1,8 @@
 package org.anhonesteffort.sciencebox;
 
-import org.anhonesteffort.sciencebox.hardware.Hardware;
-import org.anhonesteffort.sciencebox.hardware.sensor.Sensor;
-import org.anhonesteffort.sciencebox.language.InterpreterListener;
+import org.anhonesteffort.sciencebox.standard.hardware.Hardware;
+import org.anhonesteffort.sciencebox.standard.hardware.sensor.Sensor;
+import org.anhonesteffort.sciencebox.standard.language.InterpreterListener;
 
 /**
  * Programmer: rhodey

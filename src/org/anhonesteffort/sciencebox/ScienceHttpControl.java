@@ -1,10 +1,10 @@
 package org.anhonesteffort.sciencebox;
 
-import org.anhonesteffort.sciencebox.hardware.Hardware;
-import org.anhonesteffort.sciencebox.language.Grammar;
-import org.anhonesteffort.sciencebox.specific.control.HumidityController;
-import org.anhonesteffort.sciencebox.specific.control.TemperatureController;
-import org.anhonesteffort.sciencebox.specific.hardware.Blower;
+import org.anhonesteffort.sciencebox.custom.hardware.Fan;
+import org.anhonesteffort.sciencebox.standard.hardware.Hardware;
+import org.anhonesteffort.sciencebox.standard.language.Grammar;
+import org.anhonesteffort.sciencebox.custom.control.HumidityController;
+import org.anhonesteffort.sciencebox.custom.control.TemperatureController;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -21,12 +21,12 @@ public class ScienceHttpControl extends AbstractHandler {
 
   private TemperatureController tempControl;
   private HumidityController humidityControl;
-  private Blower blower;
+  private Fan fan;
 
-  public ScienceHttpControl(TemperatureController tempControl, HumidityController humidityControl, Blower blower) {
+  public ScienceHttpControl(TemperatureController tempControl, HumidityController humidityControl, Fan fan) {
     this.tempControl = tempControl;
     this.humidityControl = humidityControl;
-    this.blower = blower;
+    this.fan = fan;
   }
 
   public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
@@ -55,8 +55,8 @@ public class ScienceHttpControl extends AbstractHandler {
 
     if(baseRequest.getParameter(Grammar.TOKEN_HARDWARE_FAN) != null) {
       double new_setting = Double.parseDouble(baseRequest.getParameter(Grammar.TOKEN_HARDWARE_FAN));
-      blower.onNewSetting(Hardware.DataType.ON_OFF, new_setting);
-      blower.onNewSetting(Hardware.DataType.ON_OFF, new_setting);
+      fan.onNewSetting(Hardware.DataType.ON_OFF, new_setting);
+      fan.onNewSetting(Hardware.DataType.ON_OFF, new_setting);
     }
 
     baseRequest.setHandled(true);

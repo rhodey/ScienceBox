@@ -2,17 +2,17 @@ package org.anhonesteffort.sciencebox;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
-import org.anhonesteffort.sciencebox.specific.control.HumidityController;
-import org.anhonesteffort.sciencebox.specific.control.TemperatureController;
-import org.anhonesteffort.sciencebox.specific.hardware.Blower;
-import org.anhonesteffort.sciencebox.specific.hardware.Humidifier;
-import org.anhonesteffort.sciencebox.specific.hardware.sensor.HumiditySensor;
-import org.anhonesteffort.sciencebox.specific.hardware.PeltierCooler;
-import org.anhonesteffort.sciencebox.specific.hardware.PeltierHeater;
-import org.anhonesteffort.sciencebox.language.Interpreter;
-import org.anhonesteffort.sciencebox.language.Parser;
-import org.anhonesteffort.sciencebox.specific.serial.ScienceSerialServer;
-import org.anhonesteffort.sciencebox.specific.hardware.sensor.TemperatureSensor;
+import org.anhonesteffort.sciencebox.custom.control.HumidityController;
+import org.anhonesteffort.sciencebox.custom.control.TemperatureController;
+import org.anhonesteffort.sciencebox.custom.hardware.Fan;
+import org.anhonesteffort.sciencebox.custom.hardware.Humidifier;
+import org.anhonesteffort.sciencebox.custom.hardware.sensor.HumiditySensor;
+import org.anhonesteffort.sciencebox.custom.hardware.PeltierCooler;
+import org.anhonesteffort.sciencebox.custom.hardware.PeltierHeater;
+import org.anhonesteffort.sciencebox.standard.language.Interpreter;
+import org.anhonesteffort.sciencebox.standard.language.Parser;
+import org.anhonesteffort.sciencebox.custom.serial.ScienceSerialServer;
+import org.anhonesteffort.sciencebox.custom.hardware.sensor.TemperatureSensor;
 import org.eclipse.jetty.server.Server;
 
 import java.io.FileInputStream;
@@ -38,7 +38,7 @@ public class Main {
       PeltierCooler cooler = new PeltierCooler(scienceSerialServer);
       PeltierHeater heater = new PeltierHeater(scienceSerialServer);
       Humidifier humidifier = new Humidifier(scienceSerialServer);
-      Blower blower = new Blower(scienceSerialServer);
+      Fan fan = new Fan(scienceSerialServer);
 
       // Controllers
       TemperatureController tempController = new TemperatureController(tempSensor, cooler, heater);
@@ -46,7 +46,7 @@ public class Main {
 
       // Http control server.
       Server server = new Server(8080);
-      server.setHandler(new ScienceHttpControl(tempController, humidityController, blower));
+      server.setHandler(new ScienceHttpControl(tempController, humidityController, fan));
       server.join();
       server.start();
 
