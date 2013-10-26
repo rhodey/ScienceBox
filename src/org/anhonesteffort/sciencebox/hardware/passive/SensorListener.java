@@ -6,6 +6,6 @@ package org.anhonesteffort.sciencebox.hardware.passive;
  */
 public interface SensorListener {
 
-  public void onReadingChanged(byte[] new_reading);
+  public void onNewReading(byte[] bytes);
 
 }

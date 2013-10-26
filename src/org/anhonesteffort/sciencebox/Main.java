@@ -63,7 +63,7 @@ public class Main {
       System.out.println("FanOn script has correct syntax? " + fanParse.isSyntaxCorrect());
 
       Interpreter fanInterpret = new Interpreter(fanParse);
-      SimpleExecutor executor = new SimpleExecutor();
+      ScienceExecutor executor = new ScienceExecutor();
       fanInterpret.addInterpreterListener(executor);
       fanInterpret.run();
 

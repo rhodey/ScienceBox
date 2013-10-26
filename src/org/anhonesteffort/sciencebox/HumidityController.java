@@ -3,6 +3,7 @@ package org.anhonesteffort.sciencebox;
 import org.anhonesteffort.sciencebox.hardware.active.Humidifier;
 import org.anhonesteffort.sciencebox.hardware.passive.HumiditySensor;
 import org.anhonesteffort.sciencebox.hardware.passive.SensorListener;
+import org.anhonesteffort.sciencebox.language.Grammar;
 
 /**
  * Programmer: rhodey
@@ -27,9 +28,9 @@ public class HumidityController implements SensorListener {
 
   private void handleHumidityChange() {
     if (last_humidity < target_humidity)
-      humidifier.on();
+      humidifier.onNewSetting(Grammar.SettingType.ON_OFF, 1);
     else
-      humidifier.off();
+      humidifier.onNewSetting(Grammar.SettingType.ON_OFF, 0);
   }
 
   public double getLastReading() {
@@ -46,14 +47,14 @@ public class HumidityController implements SensorListener {
   }
 
   @Override
-  public void onReadingChanged(byte[] new_reading) {
+  public void onNewReading(byte[] bytes) {
     try {
 
-      last_humidity = Double.parseDouble(new String(new_reading));
+      last_humidity = Double.parseDouble(new String(bytes));
       handleHumidityChange();
 
     } catch (Exception e) {
-      System.out.println("Could not parse double from " + new_reading);
+      System.out.println("Could not parse double from " + bytes);
     }
   }
 

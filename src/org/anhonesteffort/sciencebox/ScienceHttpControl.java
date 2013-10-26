@@ -1,6 +1,7 @@
 package org.anhonesteffort.sciencebox;
 
 import org.anhonesteffort.sciencebox.hardware.active.Blower;
+import org.anhonesteffort.sciencebox.language.Grammar;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -55,9 +56,9 @@ public class ScienceHttpControl extends AbstractHandler {
 
     if(baseRequest.getParameter(BLOWER_STATUS_PARAM_NAME) != null) {
       if(baseRequest.getParameter(BLOWER_STATUS_PARAM_NAME).toUpperCase().equals("ON"))
-        blower.on();
+        blower.onNewSetting(Grammar.SettingType.ON_OFF, 1);
       else
-        blower.off();
+        blower.onNewSetting(Grammar.SettingType.ON_OFF, 0);
     }
   }
 }

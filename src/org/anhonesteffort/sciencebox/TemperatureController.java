@@ -4,6 +4,7 @@ import org.anhonesteffort.sciencebox.hardware.active.PeltierCooler;
 import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
 import org.anhonesteffort.sciencebox.hardware.passive.SensorListener;
 import org.anhonesteffort.sciencebox.hardware.passive.TemperatureSensor;
+import org.anhonesteffort.sciencebox.language.Grammar;
 
 /**
  * Programmer: rhodey
@@ -30,12 +31,12 @@ public class TemperatureController implements SensorListener {
 
   private void handleTempChange() {
     if (last_temp < target_temp) {
-      cooler.off();
-      heater.on();
+      cooler.onNewSetting(Grammar.SettingType.ON_OFF, 0);
+      heater.onNewSetting(Grammar.SettingType.ON_OFF, 1);
     }
     else {
-      cooler.on();
-      heater.off();
+      cooler.onNewSetting(Grammar.SettingType.ON_OFF, 1);
+      heater.onNewSetting(Grammar.SettingType.ON_OFF, 0);
     }
   }
 
@@ -53,14 +54,14 @@ public class TemperatureController implements SensorListener {
   }
 
   @Override
-  public void onReadingChanged(byte[] new_reading) {
+  public void onNewReading(byte[] bytes) {
     try {
 
-      last_temp = Double.parseDouble(new String(new_reading));
+      last_temp = Double.parseDouble(new String(bytes));
       handleTempChange();
 
     } catch (Exception e) {
-      System.out.println("Could not parse double from " + new_reading);
+      System.out.println("Could not parse double from " + bytes);
     }
   }
 

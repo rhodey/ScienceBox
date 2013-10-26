@@ -34,7 +34,7 @@ public class SimpleSensor implements ChannelListener {
 
   private void handleReadingChanged() {
     for(SensorListener listener : sensorListeners)
-      listener.onReadingChanged(last_reading);
+      listener.onNewReading(last_reading);
   }
 
   public void onDataReceived(byte[] new_reading) {

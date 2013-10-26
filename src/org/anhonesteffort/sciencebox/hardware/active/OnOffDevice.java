@@ -1,5 +1,6 @@
 package org.anhonesteffort.sciencebox.hardware.active;
 
+import org.anhonesteffort.sciencebox.language.Grammar;
 import org.anhonesteffort.sciencebox.serial.ScienceProtocol;
 import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
 
@@ -7,7 +8,7 @@ import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
  * Programmer: rhodey
  * Date: 9/28/13
  */
-public class OnOffDevice {
+public class OnOffDevice implements HardwareSettings {
 
   protected char CHANNEL = '0';
 
@@ -17,12 +18,39 @@ public class OnOffDevice {
     this.io = io;
   }
 
-  public void on() {
+  protected void on() {
     io.transmitData(ScienceProtocol.turnOnChannel(CHANNEL));
   }
 
-  public void off() {
+  protected void off() {
     io.transmitData(ScienceProtocol.turnOffChannel(CHANNEL));
+  }
+
+  @Override
+  public boolean onNewSetting(Grammar.SettingType settingType, double setting_value) {
+    switch (settingType) {
+      case ON_OFF:
+        if (setting_value == 1)
+          on();
+        else if (setting_value == 0)
+          off();
+        else
+          return false;
+        break;
+
+      case PERCENT:
+        if (setting_value == 100)
+          on();
+        else if (setting_value == 0)
+          off();
+        else
+          return false;
+        break;
+
+      default:
+        return false;
+    }
+    return true;
   }
 
 }
