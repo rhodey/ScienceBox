@@ -1,5 +1,8 @@
 package org.anhonesteffort.sciencebox.language;
 
+import org.anhonesteffort.sciencebox.hardware.Hardware;
+import org.anhonesteffort.sciencebox.hardware.sensor.Sensor;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,18 +166,18 @@ public class GrammarHelper {
     return false;
   }
 
-  public static Grammar.SettingType getSettingType(String line) throws IllegalSyntaxException {
+  public static Hardware.DataType getSettingType(String line) throws IllegalSyntaxException {
     if (!isHardwareSetting(line) && !isControlSetting(line))
       throw new IllegalSyntaxException("Provided line does not contain legal TOKEN HARDWARE TYPE or TOKEN CONTROL TYPE.");
 
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_PERCENT + ")$"))
-      return Grammar.SettingType.PERCENT;
+      return Hardware.DataType.PERCENT;
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_CELSIUS + ")$"))
-      return Grammar.SettingType.CELSIUS;
+      return Hardware.DataType.CELSIUS;
     if (line.matches("^(\\S+)(\\s+)([0-9]+)(\\s*)(" + Grammar.TOKEN_TYPE_FAHRENHEIT + ")$"))
-      return Grammar.SettingType.FAHRENHEIT;
+      return Hardware.DataType.FAHRENHEIT;
     if (line.matches("^(\\S+)(\\s+)([ON,OFF]+)$"))
-      return Grammar.SettingType.ON_OFF;
+      return Hardware.DataType.ON_OFF;
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN SETTING TYPE " +
         "and/or TOKEN SETTING VALUE.");
@@ -184,7 +187,7 @@ public class GrammarHelper {
     Pattern pattern;
     Matcher matcher;
 
-    if (getSettingType(line) == Grammar.SettingType.ON_OFF)  {
+    if (getSettingType(line) == Hardware.DataType.ON_OFF)  {
       pattern = Pattern.compile("^(\\S+)(\\s+)([ON,OFF]+)$");
       matcher = pattern.matcher(line);
       if (matcher.find()) {
@@ -204,24 +207,24 @@ public class GrammarHelper {
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN SETTING VALUE.");
   }
 
-  public static Grammar.HardwareType getHardwareType(String line) throws IllegalSyntaxException {
+  public static Hardware.HardwareType getHardwareType(String line) throws IllegalSyntaxException {
     if (line.matches("^(" + Grammar.TOKEN_HARDWARE_FAN + ")(\\s+).*"))
-      return Grammar.HardwareType.FAN;
+      return Hardware.HardwareType.FAN;
     if (line.matches("^(" + Grammar.TOKEN_HARDWARE_HEATER + ")(\\s+).*"))
-      return Grammar.HardwareType.HEATER;
+      return Hardware.HardwareType.HEATER;
     if (line.matches("^(" + Grammar.TOKEN_HARDWARE_COOLER + ")(\\s+).*"))
-      return Grammar.HardwareType.COOLER;
+      return Hardware.HardwareType.COOLER;
     if (line.matches("^(" + Grammar.TOKEN_HARDWARE_HUMIDIFIER + ")(\\s+).*"))
-      return Grammar.HardwareType.HUMIDIFIER;
+      return Hardware.HardwareType.HUMIDIFIER;
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN HARDWARE TYPE.");
   }
 
-  public static Grammar.ControlType getControlType(String line) throws IllegalSyntaxException {
+  public static Sensor.SensorType getControlType(String line) throws IllegalSyntaxException {
     if (line.matches("^(" + Grammar.TOKEN_CONTROL_TEMPERATURE + ")(\\s+).*$"))
-      return Grammar.ControlType.TEMPERATURE;
+      return Sensor.SensorType.TEMPERATURE;
     if (line.matches("^(" + Grammar.TOKEN_CONTROL_HUMIDITY + ")(\\s+).*$"))
-      return Grammar.ControlType.HUMIDITY;
+      return Sensor.SensorType.HUMIDITY;
 
     throw new IllegalSyntaxException("Provided line does not contain legal TOKEN CONTROL TYPE.");
   }

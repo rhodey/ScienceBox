@@ -35,12 +35,6 @@ public class Grammar {
   public static final String TOKEN_CONTROL_TEMPERATURE = "TEMPERATURE";
   public static final String TOKEN_CONTROL_HUMIDITY    = "HUMIDITY";
 
-  public static enum SettingType {
-    ON_OFF,
-    PERCENT,
-    CELSIUS,
-    FAHRENHEIT
-  }
 
   public static enum WaitType {
     MILLISECONDS,
@@ -48,18 +42,6 @@ public class Grammar {
     MINUTES,
     HOURS,
     DAYS
-  }
-
-  public static enum HardwareType {
-    FAN,
-    HEATER,
-    COOLER,
-    HUMIDIFIER
-  }
-
-  public static enum ControlType {
-    TEMPERATURE,
-    HUMIDITY
   }
 
 }

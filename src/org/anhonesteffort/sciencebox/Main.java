@@ -2,15 +2,17 @@ package org.anhonesteffort.sciencebox;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
-import org.anhonesteffort.sciencebox.hardware.active.Blower;
-import org.anhonesteffort.sciencebox.hardware.active.Humidifier;
-import org.anhonesteffort.sciencebox.hardware.active.PeltierCooler;
-import org.anhonesteffort.sciencebox.hardware.active.PeltierHeater;
-import org.anhonesteffort.sciencebox.hardware.passive.HumiditySensor;
-import org.anhonesteffort.sciencebox.hardware.passive.TemperatureSensor;
+import org.anhonesteffort.sciencebox.specific.control.HumidityController;
+import org.anhonesteffort.sciencebox.specific.control.TemperatureController;
+import org.anhonesteffort.sciencebox.specific.hardware.Blower;
+import org.anhonesteffort.sciencebox.specific.hardware.Humidifier;
+import org.anhonesteffort.sciencebox.specific.hardware.sensor.HumiditySensor;
+import org.anhonesteffort.sciencebox.specific.hardware.PeltierCooler;
+import org.anhonesteffort.sciencebox.specific.hardware.PeltierHeater;
 import org.anhonesteffort.sciencebox.language.Interpreter;
 import org.anhonesteffort.sciencebox.language.Parser;
-import org.anhonesteffort.sciencebox.serial.ScienceSerialServer;
+import org.anhonesteffort.sciencebox.specific.serial.ScienceSerialServer;
+import org.anhonesteffort.sciencebox.specific.hardware.sensor.TemperatureSensor;
 import org.eclipse.jetty.server.Server;
 
 import java.io.FileInputStream;

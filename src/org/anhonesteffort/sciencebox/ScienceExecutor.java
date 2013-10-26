@@ -1,6 +1,7 @@
 package org.anhonesteffort.sciencebox;
 
-import org.anhonesteffort.sciencebox.language.Grammar;
+import org.anhonesteffort.sciencebox.hardware.Hardware;
+import org.anhonesteffort.sciencebox.hardware.sensor.Sensor;
 import org.anhonesteffort.sciencebox.language.InterpreterListener;
 
 /**
@@ -25,13 +26,13 @@ public class ScienceExecutor implements InterpreterListener {
   }
 
   @Override
-  public void onHardwareSetting(Grammar.HardwareType hardwareType, Grammar.SettingType settingType, double setting_value) {
-    System.out.println("Set device " + hardwareType + " to " + setting_value + " " + settingType);
+  public void onHardwareSetting(Hardware.HardwareType hardwareType, Hardware.DataType dataType, double setting_value) {
+    System.out.println("Set device " + hardwareType + " to " + setting_value + " " + dataType);
   }
 
   @Override
-  public void onControlSetting(Grammar.ControlType controlType, Grammar.SettingType settingType, double setting_value) {
-    System.out.println("Set control " + controlType + " to " + setting_value + " " + settingType);
+  public void onControlSetting(Sensor.SensorType sensorType, Hardware.DataType dataType, double setting_value) {
+    System.out.println("Set control " + sensorType + " to " + setting_value + " " + dataType);
   }
 
 }

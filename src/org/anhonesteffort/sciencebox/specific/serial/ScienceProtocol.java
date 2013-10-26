@@ -1,4 +1,4 @@
-package org.anhonesteffort.sciencebox.serial;
+package org.anhonesteffort.sciencebox.specific.serial;
 
 /**
  * Programmer: rhodey
