@@ -4,7 +4,9 @@ package org.anhonesteffort.sciencebox.standard.hardware.sensor;
  * Programmer: rhodey
  * Date: 10/26/13
  */
-public interface StandardSensor {
+public interface ScienceSensor {
+
+  public Sensor.SensorType getSensorType();
 
   public void addListener(SensorListener listener);
 

@@ -12,13 +12,13 @@ import java.util.List;
  * Programmer: rhodey
  * Date: 9/28/13
  */
-public class ScienceSerialServer implements SerialPortEventListener, SerialDataSource, SerialDataSender {
+public class SerialServer implements SerialPortEventListener, SerialSource, SerialSender {
 
   private SerialPort serialPort;
   private List<Byte> receivedData = new LinkedList<Byte>();
-  private List<SerialDataListener> serialListeners = new LinkedList<SerialDataListener>();
+  private List<SerialListener> serialListeners = new LinkedList<SerialListener>();
 
-  public ScienceSerialServer(SerialPort serialPort) throws SerialPortException {
+  public SerialServer(SerialPort serialPort) throws SerialPortException {
     this.serialPort = serialPort;
     serialPort.addEventListener(this);
   }
@@ -28,12 +28,12 @@ public class ScienceSerialServer implements SerialPortEventListener, SerialDataS
     List<Byte> channelData = new LinkedList<Byte>();
 
     for(int i = 0; i < receivedData.size(); i++) {
-      if(receivedData.get(i).byteValue() == ScienceProtocol.SENSOR_READ_SEPARATOR || i == (receivedData.size() - 1)) {
+      if(receivedData.get(i).byteValue() == SerialProtocol.SENSOR_READ_SEPARATOR || i == (receivedData.size() - 1)) {
         byte[] channel_data = new byte[channelData.size()];
         for(int c = 0; c < channelData.size(); c++)
           channel_data[c] = channelData.get(c);
 
-        for(SerialDataListener listener : serialListeners) {
+        for(SerialListener listener : serialListeners) {
           if(listener.getChannel() == channel_number)
             listener.onSerialDataReceived(channel_data);
         }
@@ -53,7 +53,7 @@ public class ScienceSerialServer implements SerialPortEventListener, SerialDataS
       try {
         bytes = serialPort.readBytes();
         for(int i = 0; i < bytes.length; i++) {
-          if(bytes[i] == ScienceProtocol.SENSOR_READ_END) {
+          if(bytes[i] == SerialProtocol.SENSOR_READ_END) {
             callDataListeners();
             receivedData = new LinkedList<Byte>();
           }
@@ -68,17 +68,17 @@ public class ScienceSerialServer implements SerialPortEventListener, SerialDataS
   }
 
   @Override
-  public void addSerialDataListener(SerialDataListener listener) {
+  public void addSerialListener(SerialListener listener) {
     serialListeners.add(listener);
   }
 
   @Override
-  public void removeSerialDataListener(SerialDataListener listener) {
+  public void removeSerialListener(SerialListener listener) {
     serialListeners.remove(listener);
   }
 
   @Override
-  public void transmitSerialData(byte[] bytes) {
+  public void sendSerialData(byte[] bytes) {
     try {
       serialPort.writeBytes(bytes);
       System.out.println("Data transmitted: " + new String(bytes));

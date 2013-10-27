@@ -20,4 +20,21 @@ public class Hardware {
     FAHRENHEIT
   }
 
+  public static class TypedValue {
+    private DataType dataType;
+    private double value;
+
+    public TypedValue(DataType dataType, double value) {
+      this.dataType = dataType;
+      this.value = value;
+    }
+
+    public DataType getType() {
+      return dataType;
+    }
+
+    public double getValue() {
+      return value;
+    }
+  }
 }

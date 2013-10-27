@@ -1,17 +1,23 @@
 package org.anhonesteffort.sciencebox.custom.hardware;
 
-import org.anhonesteffort.sciencebox.custom.serial.ScienceProtocol;
-import org.anhonesteffort.sciencebox.custom.serial.SerialDataSender;
+import org.anhonesteffort.sciencebox.custom.serial.SerialProtocol;
+import org.anhonesteffort.sciencebox.custom.serial.SerialSender;
+import org.anhonesteffort.sciencebox.standard.hardware.Hardware;
 
 /**
  * Programmer: rhodey
  * Date: 9/28/13
  */
-public class Fan extends SerialOnOffDevice {
+public class Fan extends AbstractSerialOnOffDevice {
 
-  public Fan(SerialDataSender serialSender) {
+  public Fan(SerialSender serialSender) {
     super(serialSender);
-    CHANNEL = ScienceProtocol.CONTROL_CHANNEL_BLOWER;
+    super.CHANNEL = SerialProtocol.CONTROL_CHANNEL_BLOWER;
+  }
+
+  @Override
+  public Hardware.HardwareType getHardwareType() {
+    return Hardware.HardwareType.FAN;
   }
 
 }

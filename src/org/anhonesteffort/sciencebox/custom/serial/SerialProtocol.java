@@ -4,7 +4,7 @@ package org.anhonesteffort.sciencebox.custom.serial;
  * Programmer: rhodey
  * Date: 9/28/13
  */
-public class ScienceProtocol {
+public class SerialProtocol {
 
   private static final char CONTROL_CHANNEL_OFF = '0';
   private static final char CONTROL_CHANNEL_ON  = '1';

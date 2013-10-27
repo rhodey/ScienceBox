@@ -1,5 +1,8 @@
 package org.anhonesteffort.sciencebox.standard.language;
 
+import org.anhonesteffort.sciencebox.standard.hardware.Hardware;
+import org.anhonesteffort.sciencebox.standard.hardware.IllegalSettingException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,11 +19,11 @@ public class Interpreter implements Runnable {
 
   private Parser parser;
   private BufferedReader tempFileReader;
-  private List<InterpreterListener> listeners = new LinkedList<InterpreterListener>();
+  private List<Executor> executorList = new LinkedList<Executor>();
 
   private Map<String, Integer> procedureNames = new HashMap<String, Integer>();
   private Stack<Integer> procedureReturnStack = new Stack<Integer>();
-  private Stack<LoopRecord> loopReturnStack = new Stack<LoopRecord>();
+  private Stack<LoopRecord> loopReturnStack   = new Stack<LoopRecord>();
 
   private boolean exec = true;
   private int line_number = 0;
@@ -33,12 +36,12 @@ public class Interpreter implements Runnable {
     tempFileReader = parser.getTempFileReader();
   }
 
-  public void addInterpreterListener(InterpreterListener listener) {
-    listeners.add(listener);
+  public void addListener(Executor listener) {
+    executorList.add(listener);
   }
 
-  public void removeInterpreterListener(InterpreterListener listener) {
-    listeners.remove(listener);
+  public void removeListener(Executor listener) {
+    executorList.remove(listener);
   }
 
   private void goToLine(int dest_line_number) {
@@ -54,7 +57,7 @@ public class Interpreter implements Runnable {
     }
   }
 
-  private void interpretLine(String line) throws IOException {
+  private void interpretLine(String line) throws IOException, IllegalSettingException {
     try {
 
       if (GrammarHelper.isBlockBegin(line)) {
@@ -100,19 +103,17 @@ public class Interpreter implements Runnable {
 
       else if (GrammarHelper.isHardwareSetting(line)) {
         if (exec) {
-          for (InterpreterListener listener : listeners)
-            listener.onHardwareSetting(GrammarHelper.getHardwareType(line),
-                GrammarHelper.getSettingType(line),
-                GrammarHelper.getSettingValue(line));
+          for (Executor listener : executorList)
+            listener.onExecuteHardwareSetting(GrammarHelper.getHardwareType(line),
+                new Hardware.TypedValue(GrammarHelper.getSettingType(line), GrammarHelper.getSettingValue(line)));
         }
       }
 
       else if (GrammarHelper.isControlSetting(line)) {
         if (exec) {
-          for (InterpreterListener listener : listeners)
-            listener.onControlSetting(GrammarHelper.getControlType(line),
-                GrammarHelper.getSettingType(line),
-                GrammarHelper.getSettingValue(line));
+          for (Executor listener : executorList)
+            listener.onExecuteControlSetting(GrammarHelper.getControlType(line),
+                new Hardware.TypedValue(GrammarHelper.getSettingType(line), GrammarHelper.getSettingValue(line)));
         }
       }
 
@@ -133,23 +134,22 @@ public class Interpreter implements Runnable {
   public void run() {
     try {
 
-      for (InterpreterListener listener : listeners)
-        listener.onInterpretBegin();
+      for (Executor listener : executorList)
+        listener.onExecuteBegin();
 
       String line;
       while ((line = tempFileReader.readLine()) != null) {
-        for (InterpreterListener listener : listeners)
-          listener.onInterpretNextLine(line_number);
-
         interpretLine(line);
         line_number++;
       }
 
-      for (InterpreterListener listener : listeners)
-        listener.onInterpretComplete();
+      for (Executor listener : executorList)
+        listener.onExecuteComplete();
 
+    } catch (IllegalSettingException e) {
+      System.out.println("IllegalSettingException while interpreting script, line " + line_number + ": " + e);
     } catch (IOException e) {
-      System.out.println("IOException while interpreting script: " + e);
+      System.out.println("IOException while interpreting script, line " + line_number + ": " + e);
     }
   }
 

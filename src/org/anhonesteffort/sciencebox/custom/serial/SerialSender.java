@@ -4,8 +4,8 @@ package org.anhonesteffort.sciencebox.custom.serial;
  * Programmer: rhodey
  * Date: 10/26/13
  */
-public interface SerialDataSender {
+public interface SerialSender {
 
-  public void transmitSerialData(byte[] bytes);
+  public void sendSerialData(byte[] bytes);
 
 }

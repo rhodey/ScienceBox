@@ -2,17 +2,17 @@ package org.anhonesteffort.sciencebox;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
-import org.anhonesteffort.sciencebox.custom.control.HumidityController;
-import org.anhonesteffort.sciencebox.custom.control.TemperatureController;
+import org.anhonesteffort.sciencebox.custom.HumidityControl;
+import org.anhonesteffort.sciencebox.custom.TemperatureControl;
 import org.anhonesteffort.sciencebox.custom.hardware.Fan;
 import org.anhonesteffort.sciencebox.custom.hardware.Humidifier;
-import org.anhonesteffort.sciencebox.custom.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.custom.hardware.PeltierCooler;
 import org.anhonesteffort.sciencebox.custom.hardware.PeltierHeater;
+import org.anhonesteffort.sciencebox.custom.hardware.sensor.HumiditySensor;
+import org.anhonesteffort.sciencebox.custom.hardware.sensor.TemperatureSensor;
+import org.anhonesteffort.sciencebox.custom.serial.SerialServer;
 import org.anhonesteffort.sciencebox.standard.language.Interpreter;
 import org.anhonesteffort.sciencebox.standard.language.Parser;
-import org.anhonesteffort.sciencebox.custom.serial.ScienceSerialServer;
-import org.anhonesteffort.sciencebox.custom.hardware.sensor.TemperatureSensor;
 import org.eclipse.jetty.server.Server;
 
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ public class Main {
       // Serial port and server thing.
       sciencePort.openPort();
       sciencePort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-      ScienceSerialServer scienceSerialServer = new ScienceSerialServer(sciencePort);
+      SerialServer scienceSerialServer = new SerialServer(sciencePort);
 
       // Sensors.
       TemperatureSensor tempSensor = new TemperatureSensor(scienceSerialServer);
@@ -41,8 +41,8 @@ public class Main {
       Fan fan = new Fan(scienceSerialServer);
 
       // Controllers
-      TemperatureController tempController = new TemperatureController(tempSensor, cooler, heater);
-      HumidityController humidityController = new HumidityController(humiditySensor, humidifier);
+      TemperatureControl tempController = new TemperatureControl(tempSensor, cooler, heater);
+      HumidityControl humidityController = new HumidityControl(humiditySensor, humidifier);
 
       // Http control server.
       Server server = new Server(8080);
@@ -65,8 +65,8 @@ public class Main {
       System.out.println("FanOn script has correct syntax? " + fanParse.isSyntaxCorrect());
 
       Interpreter fanInterpret = new Interpreter(fanParse);
-      ScienceExecutor executor = new ScienceExecutor();
-      fanInterpret.addInterpreterListener(executor);
+      DebugExecutor executor = new DebugExecutor();
+      fanInterpret.addListener(executor);
       fanInterpret.run();
 
     } catch (Exception e) {

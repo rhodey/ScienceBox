@@ -1,9 +1,9 @@
 package org.anhonesteffort.sciencebox.custom.hardware.sensor;
 
-import org.anhonesteffort.sciencebox.custom.serial.SerialDataListener;
-import org.anhonesteffort.sciencebox.custom.serial.SerialDataSource;
+import org.anhonesteffort.sciencebox.custom.serial.SerialListener;
+import org.anhonesteffort.sciencebox.custom.serial.SerialSource;
+import org.anhonesteffort.sciencebox.standard.hardware.sensor.ScienceSensor;
 import org.anhonesteffort.sciencebox.standard.hardware.sensor.SensorListener;
-import org.anhonesteffort.sciencebox.standard.hardware.sensor.StandardSensor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,15 +12,15 @@ import java.util.List;
  * Programmer: rhodey
  * Date: 9/29/13
  */
-public class SerialSensor implements StandardSensor, SerialDataListener {
+public abstract class SerialSensor implements ScienceSensor, SerialListener {
 
-  protected SerialDataSource serialSource;
+  protected SerialSource serialSource;
   protected byte[] last_reading = new byte[] {0};
   protected List<SensorListener> sensorListeners = new LinkedList<SensorListener>();
 
-  public SerialSensor(SerialDataSource serialSource) {
+  public SerialSensor(SerialSource serialSource) {
     this.serialSource = serialSource;
-    serialSource.addSerialDataListener(this);
+    serialSource.addSerialListener(this);
   }
 
   @Override
@@ -33,14 +33,7 @@ public class SerialSensor implements StandardSensor, SerialDataListener {
     sensorListeners.remove(listener);
   }
 
-  @Override
-  public byte getChannel() {
-    return 0x00; // should be implemented in sub-class!
-  }
-
-  protected void handleReadingChanged() {
-    // should be implemented in sub-class!
-  }
+  protected abstract void handleReadingChanged();
 
   @Override
   public void onSerialDataReceived(byte[] bytes) {
@@ -62,7 +55,7 @@ public class SerialSensor implements StandardSensor, SerialDataListener {
   }
 
   public void finish() {
-    serialSource.removeSerialDataListener(this);
+    serialSource.removeSerialListener(this);
   }
 
 }

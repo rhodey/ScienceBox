@@ -1,10 +1,10 @@
 package org.anhonesteffort.sciencebox;
 
+import org.anhonesteffort.sciencebox.custom.HumidityControl;
+import org.anhonesteffort.sciencebox.custom.TemperatureControl;
 import org.anhonesteffort.sciencebox.custom.hardware.Fan;
 import org.anhonesteffort.sciencebox.standard.hardware.Hardware;
 import org.anhonesteffort.sciencebox.standard.language.Grammar;
-import org.anhonesteffort.sciencebox.custom.control.HumidityController;
-import org.anhonesteffort.sciencebox.custom.control.TemperatureController;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
@@ -19,11 +19,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ScienceHttpControl extends AbstractHandler {
 
-  private TemperatureController tempControl;
-  private HumidityController humidityControl;
+  private TemperatureControl tempControl;
+  private HumidityControl humidityControl;
   private Fan fan;
 
-  public ScienceHttpControl(TemperatureController tempControl, HumidityController humidityControl, Fan fan) {
+  public ScienceHttpControl(TemperatureControl tempControl, HumidityControl humidityControl, Fan fan) {
     this.tempControl = tempControl;
     this.humidityControl = humidityControl;
     this.fan = fan;
@@ -44,19 +44,19 @@ public class ScienceHttpControl extends AbstractHandler {
     if(baseRequest.getParameter(Grammar.TOKEN_CONTROL_TEMPERATURE) != null) {
       double new_target = Double.parseDouble(baseRequest.getParameter(Grammar.TOKEN_CONTROL_TEMPERATURE));
       response.getWriter().println("new target temperature: " + new_target + "<br>");
-      tempControl.setTargetReading(new_target);
+      tempControl.setTargetReading(new Hardware.TypedValue(Hardware.DataType.CELSIUS, new_target));
     }
 
     if(baseRequest.getParameter(Grammar.TOKEN_CONTROL_HUMIDITY) != null) {
       double new_target = Double.parseDouble(baseRequest.getParameter(Grammar.TOKEN_CONTROL_HUMIDITY));
       response.getWriter().println("new target humidity: " + new_target + "<br>");
-      humidityControl.setTargetReading(new_target);
+      humidityControl.setTargetReading(new Hardware.TypedValue(Hardware.DataType.PERCENT, new_target));
     }
 
     if(baseRequest.getParameter(Grammar.TOKEN_HARDWARE_FAN) != null) {
       double new_setting = Double.parseDouble(baseRequest.getParameter(Grammar.TOKEN_HARDWARE_FAN));
-      fan.onNewSetting(Hardware.DataType.ON_OFF, new_setting);
-      fan.onNewSetting(Hardware.DataType.ON_OFF, new_setting);
+      fan.onNewSetting(new Hardware.TypedValue(Hardware.DataType.ON_OFF, new_setting));
+      fan.onNewSetting(new Hardware.TypedValue(Hardware.DataType.ON_OFF, new_setting));
     }
 
     baseRequest.setHandled(true);

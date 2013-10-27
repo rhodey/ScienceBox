@@ -8,6 +8,6 @@ import org.anhonesteffort.sciencebox.standard.hardware.Hardware;
  */
 public interface SensorListener {
 
-  public void onNewReading(Sensor.SensorType sensorType, Hardware.DataType dataType, double reading);
+  public void onNewReading(Sensor.SensorType sensorType, Hardware.TypedValue sensorReading);
 
 }
