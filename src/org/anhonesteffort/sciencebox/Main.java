@@ -15,11 +15,8 @@ import org.anhonesteffort.sciencebox.standard.ControlledEnvironment;
 import org.anhonesteffort.sciencebox.standard.EnvironmentControl;
 import org.anhonesteffort.sciencebox.standard.Terminal;
 import org.anhonesteffort.sciencebox.standard.hardware.ScienceHardware;
-import org.anhonesteffort.sciencebox.standard.language.Interpreter;
-import org.anhonesteffort.sciencebox.standard.language.Parser;
 import org.eclipse.jetty.server.Server;
 
-import java.io.FileInputStream;
 import java.util.LinkedList;
 
 public class Main {
@@ -63,20 +60,10 @@ public class Main {
   }
 
   private static void otherStuff() {
-    try {
-
-      FileInputStream fileIn = new FileInputStream("/home/rhodey/dev/ScienceBox/test.fan");
-      Parser fanParse = new Parser(fileIn);
-      System.out.println("FanOn script has correct syntax? " + fanParse.isSyntaxCorrect());
-
-      Interpreter fanInterpret = new Interpreter(fanParse);
-      DebugExecutor executor = new DebugExecutor();
-      fanInterpret.addListener(executor);
-      //fanInterpret.run();
-
-    } catch (Exception e) {
-      System.out.println("the sky is falling: " + e);
-    }
+    ControlledEnvironment scienceBox = new ControlledEnvironment(new LinkedList<ScienceHardware>(),
+                                                                 new LinkedList<EnvironmentControl>());
+    Thread terminalThread = new Thread(new Terminal(scienceBox));
+    terminalThread.start();
   }
 
   public static void main(String[] args) {
@@ -84,12 +71,6 @@ public class Main {
     //stuff();
     otherStuff();
 
-    ControlledEnvironment scienceBox = new ControlledEnvironment(new LinkedList<ScienceHardware>(),
-                                                                 new LinkedList<EnvironmentControl>());
-
-    Terminal scienceTerminal = new Terminal(scienceBox);
-    Thread terminalThread = new Thread(scienceTerminal);
-    terminalThread.start();
   }
 
 }
