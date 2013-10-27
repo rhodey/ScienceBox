@@ -5,6 +5,7 @@ import org.anhonesteffort.sciencebox.standard.hardware.IllegalSettingException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Stack;
  * Programmer: rhodey
  * Date: 10/16/13
  */
-public class Interpreter implements Runnable {
+public class Interpreter extends Thread {
 
   private Parser parser;
   private BufferedReader tempFileReader;
@@ -25,10 +26,13 @@ public class Interpreter implements Runnable {
   private Stack<Integer> procedureReturnStack = new Stack<Integer>();
   private Stack<LoopRecord> loopReturnStack   = new Stack<LoopRecord>();
 
+  private boolean quit = false;
   private boolean exec = true;
   private int line_number = 0;
 
   public Interpreter(Parser parser) {
+    super("Interpreter");
+
     if (!parser.isSyntaxCorrect())
       throw new IllegalArgumentException("Provided parser cannot verify syntax of its FanOn script.");
 
@@ -42,6 +46,22 @@ public class Interpreter implements Runnable {
 
   public void removeListener(Executor listener) {
     executorList.remove(listener);
+  }
+
+  private void handleWait(long wait_ms) {
+    long sleep_stop_time_ms = new Date().getTime() + wait_ms;
+
+    while(wait_ms > 0) {
+      try {
+        Thread.sleep(wait_ms);
+        break;
+      } catch (InterruptedException e) {
+        if (quit)
+          break;
+
+        wait_ms = sleep_stop_time_ms - new Date().getTime();
+      }
+    }
   }
 
   private void goToLine(int dest_line_number) {
@@ -97,8 +117,10 @@ public class Interpreter implements Runnable {
       }
 
       else if (GrammarHelper.isWaitStatement(line)) {
-        if (exec)
+        if (exec) {
           System.out.println("wait " + GrammarHelper.getWaitCountMilliseconds(line) + " milliseconds.");
+          handleWait(GrammarHelper.getWaitCountMilliseconds(line));
+        }
       }
 
       else if (GrammarHelper.isHardwareSetting(line)) {
@@ -138,7 +160,7 @@ public class Interpreter implements Runnable {
         listener.onExecuteBegin();
 
       String line;
-      while ((line = tempFileReader.readLine()) != null) {
+      while ((line = tempFileReader.readLine()) != null && !quit) {
         interpretLine(line);
         line_number++;
       }
@@ -151,6 +173,11 @@ public class Interpreter implements Runnable {
     } catch (IOException e) {
       System.out.println("IOException while interpreting script, line " + line_number + ": " + e);
     }
+  }
+
+  public void quit() {
+    quit = true;
+    interrupt();
   }
 
   private class LoopRecord {

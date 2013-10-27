@@ -1,5 +1,7 @@
 package org.anhonesteffort.sciencebox.standard;
 
+import org.anhonesteffort.sciencebox.DebugExecutor;
+import org.anhonesteffort.sciencebox.standard.language.Interpreter;
 import org.anhonesteffort.sciencebox.standard.language.Parser;
 
 import java.io.BufferedReader;
@@ -23,8 +25,7 @@ public class Terminal implements Runnable {
                                      "#   2) quit           #\n" +
                                      "#######################\n";
 
-  private static final String MESSAGE_SCIENCE_PREVAILS = "science prevails!\n";
-  private static final String MESSAGE_SYNTAX_VERIFIED  = "FanOn syntax verified.\n";
+  private static final String MESSAGE_SCIENCE_PREVAILS = "science prevails!";
 
   private static final String PROMPT_OPTION      = "option: ";
   private static final String PROMPT_SCRIPT_PATH = "full path to FanOn script: ";
@@ -37,6 +38,7 @@ public class Terminal implements Runnable {
   private static final int OPTION_RUN_SCRIPT = 1;
   private static final int OPTION_QUIT       = 2;
 
+  private Interpreter runningInterpreter;
   private BufferedReader userInput;
   private boolean quit = false;
 
@@ -50,10 +52,17 @@ public class Terminal implements Runnable {
     try {
       FileInputStream fileIn = new FileInputStream(scriptPath);
       Parser fanParse = new Parser(fileIn);
-      if (fanParse.isSyntaxCorrect())
-        System.out.print(MESSAGE_SYNTAX_VERIFIED);
-      else
+
+      if (!fanParse.isSyntaxCorrect()) {
         System.out.print(ERROR_SYNTAX_INCORRECT);
+        return;
+      }
+
+      runningInterpreter = new Interpreter(fanParse);
+      DebugExecutor executor = new DebugExecutor();
+      runningInterpreter.addListener(executor);
+      runningInterpreter.start();
+
     } catch (IOException e) {
       System.out.print(ERROR_BAD_SCRIPT_PATH);
     }
@@ -77,6 +86,9 @@ public class Terminal implements Runnable {
           break;
 
         case OPTION_QUIT:
+          if (runningInterpreter != null)
+            runningInterpreter.quit();
+
           quit = true;
           System.out.print(MESSAGE_SCIENCE_PREVAILS);
           break;

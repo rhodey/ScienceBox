@@ -12,22 +12,22 @@ public class DebugExecutor implements Executor {
 
   @Override
   public void onExecuteBegin() {
-    System.out.println("Interpretation has begun!");
+    System.out.println("interpretation has begun!");
   }
 
   @Override
   public void onExecuteComplete() {
-    System.out.println("Interpretation has completed!");
+    System.out.println("interpretation has completed!");
   }
 
   @Override
   public void onExecuteHardwareSetting(Hardware.HardwareType hardwareType, Hardware.TypedValue hardwareSetting) {
-    System.out.println("Set device " + hardwareType + " to " + hardwareSetting.getValue() + " " + hardwareSetting.getType());
+    System.out.println("set device " + hardwareType + " to " + hardwareSetting.getValue() + " " + hardwareSetting.getType());
   }
 
   @Override
   public void onExecuteControlSetting(Sensor.SensorType controlType, Hardware.TypedValue controlSetting) {
-    System.out.println("Set control " + controlType + " to " + controlSetting.getValue() + " " + controlSetting.getType());
+    System.out.println("set control " + controlType + " to " + controlSetting.getValue() + " " + controlSetting.getType());
   }
 
 }

@@ -88,7 +88,8 @@ public class Main {
                                                                  new LinkedList<EnvironmentControl>());
 
     Terminal scienceTerminal = new Terminal(scienceBox);
-    scienceTerminal.run();
+    Thread terminalThread = new Thread(scienceTerminal);
+    terminalThread.start();
   }
 
 }
