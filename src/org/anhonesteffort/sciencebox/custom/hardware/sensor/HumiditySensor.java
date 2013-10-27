@@ -35,7 +35,7 @@ public class HumiditySensor extends SerialSensor {
         listener.onNewReading(Sensor.SensorType.HUMIDITY,
             new Hardware.TypedValue(Hardware.DataType.PERCENT, Double.parseDouble(new String(last_reading))));
 
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       System.out.println("Could not parse double from " + last_reading);
     }
   }

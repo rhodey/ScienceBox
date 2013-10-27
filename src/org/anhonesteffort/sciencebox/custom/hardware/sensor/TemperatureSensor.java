@@ -35,7 +35,7 @@ public class TemperatureSensor extends SerialSensor {
         listener.onNewReading(Sensor.SensorType.TEMPERATURE,
             new Hardware.TypedValue(Hardware.DataType.CELSIUS, Double.parseDouble(new String(last_reading))));
 
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       System.out.println("Could not parse double from " + last_reading);
     }
   }

@@ -11,11 +11,16 @@ import org.anhonesteffort.sciencebox.custom.hardware.PeltierHeater;
 import org.anhonesteffort.sciencebox.custom.hardware.sensor.HumiditySensor;
 import org.anhonesteffort.sciencebox.custom.hardware.sensor.TemperatureSensor;
 import org.anhonesteffort.sciencebox.custom.serial.SerialServer;
+import org.anhonesteffort.sciencebox.standard.ControlledEnvironment;
+import org.anhonesteffort.sciencebox.standard.EnvironmentControl;
+import org.anhonesteffort.sciencebox.standard.Terminal;
+import org.anhonesteffort.sciencebox.standard.hardware.ScienceHardware;
 import org.anhonesteffort.sciencebox.standard.language.Interpreter;
 import org.anhonesteffort.sciencebox.standard.language.Parser;
 import org.eclipse.jetty.server.Server;
 
 import java.io.FileInputStream;
+import java.util.LinkedList;
 
 public class Main {
 
@@ -67,7 +72,7 @@ public class Main {
       Interpreter fanInterpret = new Interpreter(fanParse);
       DebugExecutor executor = new DebugExecutor();
       fanInterpret.addListener(executor);
-      fanInterpret.run();
+      //fanInterpret.run();
 
     } catch (Exception e) {
       System.out.println("the sky is falling: " + e);
@@ -79,6 +84,11 @@ public class Main {
     //stuff();
     otherStuff();
 
+    ControlledEnvironment scienceBox = new ControlledEnvironment(new LinkedList<ScienceHardware>(),
+                                                                 new LinkedList<EnvironmentControl>());
+
+    Terminal scienceTerminal = new Terminal(scienceBox);
+    scienceTerminal.run();
   }
 
 }
