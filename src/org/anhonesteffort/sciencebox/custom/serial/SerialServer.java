@@ -14,12 +14,16 @@ import java.util.List;
  */
 public class SerialServer implements SerialPortEventListener, SerialSource, SerialSender {
 
+  private static final boolean DEBUG = true;
+
   private SerialPort serialPort;
   private List<Byte> receivedData = new LinkedList<Byte>();
   private List<SerialListener> serialListeners = new LinkedList<SerialListener>();
 
   public SerialServer(SerialPort serialPort) throws SerialPortException {
     this.serialPort = serialPort;
+
+    if (!DEBUG)
     serialPort.addEventListener(this);
   }
 
@@ -80,7 +84,8 @@ public class SerialServer implements SerialPortEventListener, SerialSource, Seri
   @Override
   public void sendSerialData(byte[] bytes) {
     try {
-      serialPort.writeBytes(bytes);
+      if (!DEBUG)
+        serialPort.writeBytes(bytes);
       System.out.println("Data transmitted: " + new String(bytes));
     } catch (SerialPortException e) {
       System.out.println("Data transmit error, closing!");

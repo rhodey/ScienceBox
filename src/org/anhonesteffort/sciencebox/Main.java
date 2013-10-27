@@ -15,9 +15,9 @@ import org.anhonesteffort.sciencebox.standard.ControlledEnvironment;
 import org.anhonesteffort.sciencebox.standard.EnvironmentControl;
 import org.anhonesteffort.sciencebox.standard.Terminal;
 import org.anhonesteffort.sciencebox.standard.hardware.ScienceHardware;
-import org.eclipse.jetty.server.Server;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Main {
 
@@ -27,49 +27,52 @@ public class Main {
 
     try {
 
-      // Serial port and server thing.
-      sciencePort.openPort();
-      sciencePort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-      SerialServer scienceSerialServer = new SerialServer(sciencePort);
+      // Implementation specific serial thing.
+      //sciencePort.openPort();
+      //sciencePort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+      SerialServer serialServer = new SerialServer(sciencePort);
 
-      // Sensors.
-      TemperatureSensor tempSensor = new TemperatureSensor(scienceSerialServer);
-      HumiditySensor humiditySensor = new HumiditySensor(scienceSerialServer);
+      // Implementation specific hardware.
+      Fan fan               = new Fan(serialServer);
+      PeltierHeater heater  = new PeltierHeater(serialServer);
+      PeltierCooler cooler  = new PeltierCooler(serialServer);
+      Humidifier humidifier = new Humidifier(serialServer);
 
-      // Active hardware.
-      PeltierCooler cooler = new PeltierCooler(scienceSerialServer);
-      PeltierHeater heater = new PeltierHeater(scienceSerialServer);
-      Humidifier humidifier = new Humidifier(scienceSerialServer);
-      Fan fan = new Fan(scienceSerialServer);
+      // Implementation specific sensors.
+      TemperatureSensor tempSensor  = new TemperatureSensor(serialServer);
+      HumiditySensor humiditySensor = new HumiditySensor(serialServer);
 
-      // Controllers
+      // Implementation specific controllers.
       TemperatureControl tempController = new TemperatureControl(tempSensor, cooler, heater);
       HumidityControl humidityController = new HumidityControl(humiditySensor, humidifier);
 
-      // Http control server.
-      Server server = new Server(8080);
-      server.setHandler(new ScienceHttpControl(tempController, humidityController, fan));
-      server.join();
-      server.start();
+      // Implementation agnostic hardware.
+      List<ScienceHardware> availableHardware = new LinkedList<ScienceHardware>();
+      availableHardware.add(fan);
+      availableHardware.add(heater);
+      availableHardware.add(cooler);
+      availableHardware.add(humidifier);
+
+      // Implementation agnostic controllers.
+      List<EnvironmentControl> environmentControls = new LinkedList<EnvironmentControl>();
+      environmentControls.add(tempController);
+      environmentControls.add(humidityController);
+
+
+      // Implementation agnostic... everything else.
+      ControlledEnvironment scienceBox = new ControlledEnvironment(new LinkedList<ScienceHardware>(),
+                                                                   new LinkedList<EnvironmentControl>());
+      Thread terminalThread = new Thread(new Terminal(scienceBox));
+      terminalThread.start();
 
     } catch (SerialPortException e) {
       System.out.println("Serial port is mad: " + e);
-    } catch (Exception e) {
-      System.out.println("Http server is mad: " + e);
     }
-  }
-
-  private static void otherStuff() {
-    ControlledEnvironment scienceBox = new ControlledEnvironment(new LinkedList<ScienceHardware>(),
-                                                                 new LinkedList<EnvironmentControl>());
-    Thread terminalThread = new Thread(new Terminal(scienceBox));
-    terminalThread.start();
   }
 
   public static void main(String[] args) {
 
-    //stuff();
-    otherStuff();
+    stuff();
 
   }
 
